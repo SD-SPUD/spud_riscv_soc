@@ -3,7 +3,6 @@ import sys
 import argparse
 import sys
 import atexit
-import termios
 import os
 
 from elftools.elf.elffile import ELFFile
@@ -26,25 +25,33 @@ def main(argv):
     args = parser.parse_args()
 
     global bus_if
+    print(f"Connecting to {args.device} at {args.baud} baud...")
     bus_if = BusInterface(args.type, args.device, args.baud)
+    print("Connected!")
 
     # Reset
+    print("Resetting device...")
     bus_if.write_gpio(0x0)
     bus_if.write_gpio(0x1)
+    print("Reset complete.")
 
+    print("Starting console... Press Ctrl+C to exit.")
     stdio_init()
 
-    while True:
-
-        if bus_if.bus.uart.in_waiting > 0:
-            ch = bus_if.bus.uart.read(1)
+    try:
+        while True:
+            if bus_if.bus.uart.in_waiting > 0:
+                ch = bus_if.bus.uart.read(1)
+                if ch != None:
+                    sys.stdout.write(ch.decode('utf-8', errors='ignore'))
+                    sys.stdout.flush()     
+            
+            ch = stdio_read()
             if ch != None:
-                sys.stdout.write(ch)
-                sys.stdout.flush()     
-        
-        ch = stdio_read()
-        if ch != None:
-            bus_if.bus.uart.write(ch)
+                bus_if.bus.uart.write(ch)
+    except KeyboardInterrupt:
+        print("\nExiting console...")
+        sys.exit(0)
 
 
 if __name__ == "__main__":
