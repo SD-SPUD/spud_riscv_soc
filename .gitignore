@@ -1,0 +1,53 @@
+# Vivado generated files and directories
+
+# IP synthesis outputs
+*.bmj
+*.dcp
+*.veo
+*.vho
+*.xml
+*_bmstub.v
+*_clocks.xdc
+*_ooc.xdc
+*_sim_netlist.v
+*_sim_netlist.vhdl
+*_stub.v
+*_stub.vhdl
+*_xmdf.tcl
+
+# IP directories (generated)
+**/ip/*/doc/
+**/ip/*/hdl/
+**/ip/*/sim/
+**/ip/*/simulation/
+**/ip/*/synth/
+**/ip/*/sysc/
+**/ip/*/example_design/
+**/ip/*/user_design/
+**/ip/*/mig_axis/
+
+# Project cache and generated files
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+
+# Vivado logs and journals
+vivado.jou
+vivado.log
+vivado_*.backup.jou
+vivado_*.backup.log
+
+# IP upgrade logs
+ip_upgrade.log
+xil_*.in
+xil_*.out
+
+# Bitstream backup files
+*.bak.bit
+
+# Project temporary files
+*.wpc
+*.wdf
+*.lpr
