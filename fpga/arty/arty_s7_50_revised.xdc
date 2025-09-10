@@ -1,4 +1,4 @@
-## This file is a general .xdc for the Arty S7-50 Rev. E
+## This file is a general .xdc for the Arty S7-50 Rev. E based on the Arty A7-100T version made by ultraembedded (arty_revb.xdc)
 ## To use it in a project:
 ## - uncomment the lines corresponding to used pins
 ## - rename the used ports (in each line, after get_ports) according to the top level signal names in the project
