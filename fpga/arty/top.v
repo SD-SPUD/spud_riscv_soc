@@ -4,6 +4,7 @@
 module top
 (
     input                   clk100mhz,
+    input                   i_rst,
     output [3:0]            led,
     output                  uart_rxd_out,
     input                   uart_txd_in,
@@ -132,6 +133,7 @@ arty_ddr u_ddr
 
 wire dbg_txd_w;
 wire uart_txd_w;
+wire debug_cpu_reset_w;
 
 fpga_top
 u_top
@@ -186,7 +188,10 @@ u_top
     .dbg_rxd_o(dbg_txd_w),
     .dbg_txd_i(uart_txd_in),
     .uart_rxd_o(uart_txd_w),
-    .uart_txd_i(uart_txd_in)
+    .uart_txd_i(uart_txd_in),
+    
+    // Debug status
+    .debug_cpu_reset_o(debug_cpu_reset_w)
 );
 
 // Xilinx placement pragmas:
@@ -203,10 +208,15 @@ else
 assign uart_rxd_out  = txd_q;
 
 
-assign led[0] = 1'b1;
-assign led[1] = 1'b0;
-assign led[2] = 1'b0;
-assign led[3] = 1'b0;
+// HDL led[0-3] maps to physical LD2-LD5 (LD0-LD1 are RGB/not available)
+// led[0] -> LD2: CPU held in reset by debug bridge (should be ON initially)
+// led[1] -> LD3: Debug bridge UART activity (toggle when commands received)  
+// led[2] -> LD4: System reset status (ON when in reset)
+// led[3] -> LD5: Always ON (power indicator)
+assign led[0] = debug_cpu_reset_w;    // LD2: ON when CPU in debug reset
+assign led[1] = 1'b0;                 // LD3: Reserved for UART activity
+assign led[2] = rst_sys_w;            // LD4: ON when system in reset  
+assign led[3] = 1'b1;                 // LD5: Always ON (power/alive indicator)
 
 assign qspi_dq[2] = 1'bz;
 assign qspi_dq[3] = 1'bz;
