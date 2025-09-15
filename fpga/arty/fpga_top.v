@@ -90,6 +90,7 @@ module fpga_top
     ,output          uart_rxd_o
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
+    ,output          debug_cpu_reset_o
 );
 
 wire  [  3:0]  axi_dbg_wstrb_w;
@@ -315,5 +316,7 @@ riscv_soc u_soc
 
 assign rst_cpu_w       = ~enable_w[`DBG_BIT_RELEASE_RESET];
 
+// Debug status: CPU is held in reset by debug bridge
+assign debug_cpu_reset_o = rst_cpu_w;
 
 endmodule

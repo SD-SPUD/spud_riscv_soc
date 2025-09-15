@@ -21,7 +21,7 @@
         "TEMP_MON_CONTROL": [ { "value": "INTERNAL", "resolve_type": "generated", "usage": "all" } ],
         "POLARITY": [ { "value": "ACTIVE_LOW", "resolve_type": "generated", "usage": "all" } ],
         "IS_CLK_SHARED": [ { "value": "FALSE", "resolve_type": "generated", "usage": "all" } ],
-        "SYSCLK_TYPE": [ { "value": "NOBUF", "resolve_type": "generated", "usage": "all" } ],
+        "SYSCLK_TYPE": [ { "value": "SINGLE", "resolve_type": "generated", "usage": "all" } ],
         "USE_AXI": [ { "value": "1", "resolve_type": "generated", "format": "long", "usage": "all" } ],
         "ECC": [ { "value": "OFF", "resolve_type": "generated", "usage": "all" } ],
         "DDR3_DQ_WIDTH": [ { "value": "16", "resolve_type": "generated", "format": "long", "usage": "all" } ],
@@ -1183,7 +1183,7 @@
         "SELECTEDSIMMODEL": [ { "value": "" } ],
         "SHAREDDIR": [ { "value": "." } ],
         "SWVERSION": [ { "value": "2024.2" } ],
-        "SYNTHESISFLOW": [ { "value": "OUT_OF_CONTEXT" } ]
+        "SYNTHESISFLOW": [ { "value": "GLOBAL" } ]
       }
     },
     "boundary": {
@@ -1490,7 +1490,7 @@
           "memory_map_ref": "memmap",
           "parameters": {
             "FREQ_HZ": [ { "value": "81247969", "resolve_type": "dependent", "format": "float", "usage": "all" } ],
-            "DATA_WIDTH": [ { "value": "32", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
+            "DATA_WIDTH": [ { "value": "32", "value_src": "auto", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
             "PROTOCOL": [ { "value": "AXI4", "resolve_type": "generated", "is_ips_inferred": true, "is_static_object": false } ],
             "ID_WIDTH": [ { "value": "4", "value_src": "auto", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
             "ADDR_WIDTH": [ { "value": "28", "value_src": "auto", "resolve_type": "generated", "format": "long", "is_ips_inferred": true, "is_static_object": false } ],
