@@ -3,8 +3,11 @@
 
 #include <systemc.h>
 #include "verilated.h"
+#ifdef VM_TRACE
 #include "verilated_vcd_sc.h"
+#endif
 
+#ifdef VM_TRACE
 #define verilator_trace_enable(vcd_filename, dut) \
         if (waves_enabled()) \
         { \
@@ -14,6 +17,9 @@
             v_vcd->open (vcd_filename); \
             this->m_verilate_vcd = v_vcd; \
         }
+#else
+#define verilator_trace_enable(vcd_filename, dut) // No tracing
+#endif
 
 //-----------------------------------------------------------------
 // Module
@@ -44,12 +50,14 @@ public:
     virtual void abort(void)
     {
         cout << "TB: Aborted at " << sc_time_stamp() << endl;
+#ifdef VM_TRACE
         if (m_verilate_vcd)
         {
             m_verilate_vcd->flush();
             m_verilate_vcd->close();
             m_verilate_vcd = NULL;
         }
+#endif
     }
 
     bool waves_enabled(void)
@@ -71,7 +79,9 @@ public:
     }
 
 protected:
+#ifdef VM_TRACE
     VerilatedVcdC   *m_verilate_vcd;
+#endif
 };
 
 #endif
