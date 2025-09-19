@@ -37,7 +37,7 @@ module led_controller (
 	input		cfg_awvalid_i,
 	input  [31:0]  	cfg_awaddr_i,
 	input	        cfg_wvalid_i,
-	input  [31:0]	cfg_wdata_i.
+	input  [31:0]	cfg_wdata_i,
 	input  [3:0]	cfg_wstrb_i,
 	input          	cfg_bready_i,
 	input          	cfg_arvalid_i,
@@ -101,7 +101,7 @@ module led_controller (
 	// Write data to led output
 	always @(posedge clk_i or posedge rst_i)
 		if (rst_i)
-			led_data_q <= '0;
+			led_data_q <= 2'b00; 
 		else if(led_data_wr_q) 	// valid write check
 			led_data_q <= cfg_wdata_i[1:0];
 		
