@@ -91,6 +91,7 @@ module fpga_top
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
     ,output          debug_cpu_reset_o
+    ,output  [1:0]   led_o
 );
 
 wire  [  3:0]  axi_dbg_wstrb_w;
@@ -285,6 +286,7 @@ riscv_soc u_soc
     ,.uart_rxd_o(uart_rxd_o)
     ,.gpio_output_o(gpio_output_o)
     ,.gpio_output_enable_o(gpio_output_enable_o)
+    ,.led_o(led_o)
     ,.mem_awvalid_o(axi_cdc_wr_awvalid_w)
     ,.mem_awaddr_o(axi_cdc_wr_awaddr_w)
     ,.mem_awid_o(axi_cdc_wr_awid_w)

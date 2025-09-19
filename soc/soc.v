@@ -168,9 +168,9 @@ module soc
     ,output          uart_rxd_o
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
+    ,output [  1:0]  led_o
 );
 // Internal wires
-wire [1:0] led_o;		// TODO: add to real outputs later
 wire  [  3:0]  axi_retime_arid_w;
 wire           axi_arb_out_arvalid_w;
 wire           axi_retime_arvalid_w;

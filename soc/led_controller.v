@@ -107,6 +107,7 @@ module led_controller (
 		
 	// Latch output
 	assign led_o = led_data_q;
+
 			
 			
 

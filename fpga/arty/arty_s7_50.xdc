@@ -1,3 +1,12 @@
+set_property -dict {PACKAGE_PIN R2 IOSTANDARD SSTL135} [get_ports clk100mhz]
+set_property -dict {PACKAGE_PIN E18 IOSTANDARD LVCMOS33} [get_ports {led_controller[0]}]
+set_property -dict {PACKAGE_PIN F13 IOSTANDARD LVCMOS33} [get_ports {led_controller[1]}]
+set_property -dict {PACKAGE_PIN E13 IOSTANDARD LVCMOS33} [get_ports {led[0]}]
+set_property -dict {PACKAGE_PIN H15 IOSTANDARD LVCMOS33} [get_ports {led[1]}]
+set_property -dict {PACKAGE_PIN R12 IOSTANDARD LVCMOS33} [get_ports uart_rxd_out]
+set_property -dict {PACKAGE_PIN V12 IOSTANDARD LVCMOS33} [get_ports uart_txd_in]
+set_property -dict {PACKAGE_PIN L16 IOSTANDARD LVCMOS33} [get_ports qspi_sck]
+set_property -dict {PACKAGE_PIN L13 IOSTANDARD LVCMOS33} [get_ports qspi_cs]
 ## This file is a general .xdc for the Arty S7-50 Rev. E
 ## To use it in a project:
 ## - uncomment the lines corresponding to used pins
@@ -5,18 +14,13 @@
 
 ## Clock Signals
 ## Main 100MHz system clock
-set_property -dict {PACKAGE_PIN R2 IOSTANDARD SSTL135} [get_ports clk100mhz]
 create_clock -period 10.000 -name sys_clk_pin -waveform {0.000 5.000} -add [get_ports clk100mhz]
 ## Allow non-dedicated clock routing to resolve placement conflict
 set_property CLOCK_DEDICATED_ROUTE FALSE [get_nets u_pll/clkref_buffered_w]
 
 ## LEDs (LD0-1 are RGB, using LD2-5 for simple LEDs)
 #set_property -dict {PACKAGE_PIN E18 IOSTANDARD LVCMOS33} [get_ports {led[0]}]  # LD0 RGB - not used
-#set_property -dict {PACKAGE_PIN F18 IOSTANDARD LVCMOS33} [get_ports {led[1]}]  # LD1 RGB - not used  
-set_property -dict {PACKAGE_PIN E18 IOSTANDARD LVCMOS33} [get_ports {led[0]}];
-set_property -dict {PACKAGE_PIN F13 IOSTANDARD LVCMOS33} [get_ports {led[1]}];
-set_property -dict {PACKAGE_PIN E13 IOSTANDARD LVCMOS33} [get_ports {led[2]}];
-set_property -dict {PACKAGE_PIN H15 IOSTANDARD LVCMOS33} [get_ports {led[3]}];
+#set_property -dict {PACKAGE_PIN F18 IOSTANDARD LVCMOS33} [get_ports {led[1]}]  # LD1 RGB - not used
 
 ## Buttons
 # set_property -dict {PACKAGE_PIN G15 IOSTANDARD LVCMOS33} [get_ports i_rst]
@@ -31,13 +35,9 @@ set_property -dict {PACKAGE_PIN H15 IOSTANDARD LVCMOS33} [get_ports {led[3]}];
 
 
 ## USB-UART Interface
-set_property -dict {PACKAGE_PIN R12 IOSTANDARD LVCMOS33} [get_ports { uart_rxd_out }];
-set_property -dict {PACKAGE_PIN V12 IOSTANDARD LVCMOS33} [get_ports { uart_txd_in }];
 #set_property -dict { PACKAGE_PIN D10   IOSTANDARD LVCMOS33 } [get_ports { uart_rxd_out }]; #IO_L19N_T3_VREF_16 Sch=uart_rxd_outs
 
 ##Quad SPI Flash
-set_property -dict { PACKAGE_PIN L16   IOSTANDARD LVCMOS33 } [get_ports { qspi_sck }]; #IO_L3P_T0_DQS_EMCCLK_14 Sch=qspi_sck
-set_property -dict { PACKAGE_PIN L13   IOSTANDARD LVCMOS33 } [get_ports { qspi_cs }]; #IO_L6P_T0_FCS_B_14 Sch=qspi_cs
 
 ## Configuration options, can be used for all designs
 set_property BITSTREAM.CONFIG.CONFIGRATE 50 [current_design]
@@ -55,3 +55,8 @@ set_property CONFIG_MODE SPIx4 [current_design]
 set_property INTERNAL_VREF 0.675 [get_iobanks 34]
 
 
+
+set_property IOSTANDARD LVCMOS33 [get_ports {qspi_dq[3]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {qspi_dq[2]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {qspi_dq[1]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {qspi_dq[0]}]
