@@ -54,7 +54,6 @@ module led_controller (
 	output [31:0]  	cfg_rdata_o,
 	output [1:0]   	cfg_rresp_o,
 	output [1:0]	led_o,
-	output         	intr_o				
 );
 
 
@@ -109,8 +108,60 @@ module led_controller (
 	assign led_o = led_data_q;
 
 			
-			
+	
 
+	/* NOT NEEDED FOR NOW: READ LOGIC
+	//-----------------------------------------------------------------
+	// RVALID (taken from gpio.v, "data ready")
+	//-----------------------------------------------------------------
+	reg rvalid_q;
+
+	always @ (posedge clk_i or posedge rst_i)
+		if (rst_i)
+	    		rvalid_q <= 1'b0;
+	    	else if (read_en_w)
+	        	rvalid_q <= 1'b1;
+		else if (cfg_rready_i)
+		    	rvalid_q <= 1'b0;
+
+	assign cfg_rvalid_o = rvalid_q;
+
+	//-----------------------------------------------------------------
+	// Retime read response (stores read data until CPU is ready to take it)
+	//-----------------------------------------------------------------
+	reg [31:0] rd_data_q;
+
+	always @ (posedge clk_i or posedge rst_i)
+		if (rst_i)
+			rd_data_q <= 32'b0;
+		else if (!cfg_rvalid_o || cfg_rready_i)
+			rd_data_q <= data_r;
+
+	assign cfg_rdata_o = rd_data_q;
+	assign cfg_rresp_o = 2'b0;
+
+	*/
+
+	// TEMPORARY READ LOGIC (dummy data)
+	assign cfg_rvalid_o = 1'b0;
+	assign cfg_rdata_o  = 32'b0;
+	assign cfg_rresp_o  = 2'b0;
+
+	//-----------------------------------------------------------------
+	// BVALID (write response valid, completes the handshake)
+	//-----------------------------------------------------------------
+	reg bvalid_q;
+
+	always @ (posedge clk_i or posedge rst_i)
+		if (rst_i)
+			bvalid_q <= 1'b0;
+		else if (write_en_w)
+			bvalid_q <= 1'b1;
+		else if (cfg_bready_i)
+			bvalid_q <= 1'b0;
+
+		assign cfg_bvalid_o = bvalid_q;
+		assign cfg_bresp_o  = 2'b0;
 
 endmodule
 
