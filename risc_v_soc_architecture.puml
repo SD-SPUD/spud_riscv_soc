@@ -1,0 +1,132 @@
+@startuml RISC-V SoC Architecture
+
+!define RECTANGLE class
+!define INTERFACE interface
+
+title RISC-V Test SoC Architecture Overview
+
+' Define color scheme
+!define CPU_COLOR #FFE4B5
+!define MEMORY_COLOR #E6F3FF
+!define PERIPHERAL_COLOR #F0FFF0
+!define INTERCONNECT_COLOR #FFE4E1
+
+package "RISC-V SoC (riscv_soc.v)" {
+
+  ' External Interfaces
+  rectangle "External Debug\nInterface" as ext_debug #LIGHTGRAY {
+    note right : AXI4-Lite slave port\nfor external debug access
+  }
+
+  rectangle "External Memory\nInterface" as ext_memory #LIGHTGRAY {
+    note right : AXI4 master port\nto DDR/SDRAM
+  }
+
+  rectangle "GPIO Pins" as gpio_pins #LIGHTGRAY
+  rectangle "UART Pins" as uart_pins #LIGHTGRAY
+  rectangle "SPI Pins" as spi_pins #LIGHTGRAY
+
+  ' AXI4-Lite to AXI4 Converter
+  rectangle "AXI4-Lite to AXI4\nConverter" as axi_conv #INTERCONNECT_COLOR {
+    note bottom : Converts external\nAXI4-Lite to AXI4
+  }
+
+  ' RISC-V Core Complex
+  package "RISC-V Core (riscv_top.v)" #CPU_COLOR {
+    rectangle "RISC-V Core\n(RV32IM)" as cpu_core {
+      note bottom : 32-bit RISC-V core\nwith Integer & Multiply
+    }
+
+    rectangle "I-Cache\n(16KB, 2-way)" as icache #MEMORY_COLOR {
+      note bottom : 8KB x 2-way set\nassociative instruction cache
+    }
+
+    rectangle "D-Port Bridge" as dport_bridge #INTERCONNECT_COLOR {
+      note bottom : Bridges CPU data port\nto AXI4 interface
+    }
+  }
+
+  ' SoC Interconnect and Peripherals
+  package "SoC Subsystem (soc.v)" #PERIPHERAL_COLOR {
+
+    ' AXI Interconnect
+    rectangle "AXI4 Arbiter\n(3-to-1)" as axi_arb #INTERCONNECT_COLOR {
+      note bottom : Arbitrates between:\n- External debug\n- CPU data\n- CPU instruction
+    }
+
+    rectangle "AXI4-Lite Tap\n(Address Decoder)" as axi_tap #INTERCONNECT_COLOR {
+      note bottom : Decodes addresses to\nroute to peripherals
+    }
+
+    rectangle "AXI4 Retime\nBuffer" as axi_retime #INTERCONNECT_COLOR {
+      note bottom : Timing buffer for\nexternal memory
+    }
+
+    ' Peripherals
+    rectangle "Interrupt Controller\n(IRQ)" as irq_ctrl #PERIPHERAL_COLOR {
+      note bottom : 0x9000_0000\nManages 4 interrupt sources
+    }
+
+    rectangle "Timer\n(Dual Channel)" as timer #PERIPHERAL_COLOR {
+      note bottom : 0x9100_0000\nTwo independent timers
+    }
+
+    rectangle "UART Lite" as uart #PERIPHERAL_COLOR {
+      note bottom : 0x9200_0000\nSimple serial interface
+    }
+
+    rectangle "SPI Lite" as spi #PERIPHERAL_COLOR {
+      note bottom : 0x9300_0000\nSPI master interface
+    }
+
+    rectangle "GPIO Controller" as gpio #PERIPHERAL_COLOR {
+      note bottom : 0x9400_0000\n32-bit GPIO with interrupts
+    }
+  }
+}
+
+' Memory Map Information
+note top of irq_ctrl : **Memory Map:**\n0x8000_0000 - Main Memory\n0x9000_0000 - IRQ Controller\n0x9100_0000 - Timer\n0x9200_0000 - UART\n0x9300_0000 - SPI\n0x9400_0000 - GPIO
+
+' External Connections
+ext_debug --> axi_conv : AXI4-Lite
+axi_conv --> axi_arb : AXI4
+
+' CPU Core Connections
+cpu_core --> dport_bridge : Data Port
+cpu_core --> icache : Instruction Fetch
+cpu_core <-- irq_ctrl : Interrupt Request
+
+' Instruction Cache to Memory
+icache --> axi_arb : AXI4 (Instruction)
+
+' Data Path
+dport_bridge --> axi_arb : AXI4 (Data)
+
+' Interconnect Flow
+axi_arb --> axi_tap : AXI4
+axi_tap --> axi_retime : Memory Access
+axi_retime --> ext_memory : AXI4
+
+' Peripheral Connections
+axi_tap --> irq_ctrl : AXI4-Lite
+axi_tap --> timer : AXI4-Lite
+axi_tap --> uart : AXI4-Lite
+axi_tap --> spi : AXI4-Lite
+axi_tap --> gpio : AXI4-Lite
+
+' Interrupt Connections
+timer --> irq_ctrl : IRQ[0]
+uart --> irq_ctrl : IRQ[1]
+spi --> irq_ctrl : IRQ[2]
+gpio --> irq_ctrl : IRQ[3]
+
+' External I/O
+uart <--> uart_pins : TX/RX
+spi <--> spi_pins : CLK/MOSI/MISO/CS
+gpio <--> gpio_pins : I/O[31:0]
+
+' Key Features Box
+note bottom : **Key Features:**\n• RV32IM RISC-V core with instruction cache\n• AXI4/AXI4-Lite interconnect\n• Timer, UART, SPI, GPIO peripherals\n• Interrupt controller with 4 sources\n• External memory interface\n• Debug access port\n• Linux-capable (with RV32IMSU core)
+
+@enduml
