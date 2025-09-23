@@ -53,7 +53,7 @@ module led_controller (
 	output         	cfg_rvalid_o,
 	output [31:0]  	cfg_rdata_o,
 	output [1:0]   	cfg_rresp_o,
-	output [1:0]	led_o,
+	output [1:0]	led_o
 );
 
 
