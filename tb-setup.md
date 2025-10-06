@@ -59,32 +59,25 @@ make install
 export PATH=$HOME/verilator-3.890/bin:$PATH
 # Verify: verilator --version should show "Verilator 3.890 2016-11-25"
 ```
-
-Step 3: Environment Setup (New)
-
-After installation, run the provided setup script to configure your local SystemC and Verilator paths:
-
+### Step 3: Environment Setup (New!)
+7. **After installation, run the provided setup script to configure your local SystemC and Verilator paths:**
+```bash
 ./setup_env.sh
-
+```
 
 You’ll be prompted for:
-
 SystemC installation path (e.g., /home/you/systemc-2.3.3)
-
 Verilator installation path (e.g., /home/you/verilator-3.890)
 
 This script automatically:
-
-Creates a .env file in the repository root with your local paths
-
-Updates makefile, makefile.build_verilated, and makefile.build_sysc_tb to use the environment variables defined in .env
-
-Keeps your configuration private — the .env file is ignored by Git
+- Creates a .env file in the repository root with your local paths
+- Updates makefile, makefile.build_verilated, and makefile.build_sysc_tb to use the environment variables defined in .env
+- Keeps your configuration private — the .env file is ignored by Git
 
 Once setup is complete, you can build normally:
-
+```bash
 make
-
+```
 
 Edit `tb/makefile.build_verilated`:
 ```makefile
