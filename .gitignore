@@ -59,3 +59,7 @@ tb/obj/
 tb/obj_verilated/
 tb/verilated/
 tb/*.vcd
+
+# Ignore local environment configuration
+.env
+

@@ -1,18 +1,22 @@
+ifneq ("$(wildcard .env)","")
+include .env
+endif
+
 ###############################################################################
 ## Tool paths
 ###############################################################################
-VERILATOR_SRC ?= /home/mclovin/verilator-3.890/share/verilator/include
-SYSTEMC_HOME  ?= /home/mclovin/systemc-2.3.3
+VERILATOR_SRC ?= $(VERILATOR_HOME)/share/verilator/include
+SYSTEMC_HOME  ?= $(SYSTEMC_HOME)
 
 TEST_IMAGE ?= ../core/isa_sim/images/basic.elf
 
 CORE       ?= rv32imsu
 
 # Set PATH to include our custom Verilator
-PATH := /home/mclovin/verilator-3.890/bin:$(PATH)
-SYSTEMC_INCLUDE := /home/mclovin/systemc-2.3.3/include
-SYSTEMC_LIBDIR := /home/mclovin/systemc-2.3.3/lib-linux64
-LD_LIBRARY_PATH := /home/mclovin/systemc-2.3.3/lib-linux64:$(LD_LIBRARY_PATH)
+PATH := $(VERILATOR_HOME)/bin:$(PATH)
+SYSTEMC_INCLUDE := $(SYSTEMC_HOME)/include
+SYSTEMC_LIBDIR := $(SYSTEMC_HOME)/lib-linux64
+LD_LIBRARY_PATH := $(SYSTEMC_LIBDIR):$(LD_LIBRARY_PATH)
 
 export VERILATOR_SRC
 export SYSTEMC_HOME
