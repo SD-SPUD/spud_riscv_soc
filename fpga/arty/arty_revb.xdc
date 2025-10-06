@@ -1,4 +1,4 @@
-## This file is a general .xdc for the ARTY Rev. B
+## This file is a revised .xdc based on the RevB A7-100T version and the S7-50 Master version. 
 ## To use it in a project:
 ## - uncomment the lines corresponding to used pins
 ## - rename the used ports (in each line, after get_ports) according to the top level signal names in the project

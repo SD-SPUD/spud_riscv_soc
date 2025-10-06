@@ -45,6 +45,7 @@ public:
     sc_signal <sc_uint<32> >     gpio_output_out;
     sc_signal <sc_uint<32> >     gpio_input_in;
     sc_signal <sc_uint<32> >     gpio_output_enable_out;
+    sc_signal <sc_uint<2> >     led_out;			// led_controller
 
     //-----------------------------------------------------------------
     // process: Main loop for CPU execution
@@ -83,6 +84,7 @@ public:
         m_dut->gpio_output_out(gpio_output_out);
         m_dut->gpio_input_in(gpio_input_in);
         m_dut->gpio_output_enable_out(gpio_output_enable_out);
+	m_dut->led_out(led_out);					// led_controller
 
         // Memory
         m_mem = new tb_axi4_mem("MEM");
@@ -92,7 +94,7 @@ public:
         m_mem->axi_out(mem_in);
         m_mem->enable_delays(false);
 
-        verilator_trace_enable("verilator.vcd", m_dut);
+        // verilator_trace_enable("verilator.vcd", m_dut); // Temporarily disabled due to compatibility issue
     }
     //-----------------------------------------------------------------
     // Trace

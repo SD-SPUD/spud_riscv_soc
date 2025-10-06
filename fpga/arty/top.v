@@ -5,8 +5,7 @@ module top
 (
     input                   clk100mhz,
     input                   i_rst,
-    output [1:0]            led,
-    output [1:0]            led_controller,
+    output [3:0]            led,
     output                  uart_rxd_out,
     input                   uart_txd_in,
 
@@ -68,7 +67,6 @@ wire  [ 31:0]  axi_awaddr_w;
 wire           axi_bvalid_w;
 wire           axi_bready_w;
 wire  [ 31:0]  axi_wdata_w;
-wire [1:0]      led_w;
 
 artix7_pll
 u_pll
@@ -186,6 +184,9 @@ u_top
     .gpio_output_enable_o(),
     .gpio_input_i(32'b0),
 
+    // LED
+    .led_o(led[1:0]),		// led_controller
+
     // UART
     .dbg_rxd_o(dbg_txd_w),
     .dbg_txd_i(uart_txd_in),
@@ -193,10 +194,7 @@ u_top
     .uart_txd_i(uart_txd_in),
     
     // Debug status
-    .debug_cpu_reset_o(debug_cpu_reset_w),
-    
-    // LED CONTROLLER
-    .led_o(led_w)
+    .debug_cpu_reset_o(debug_cpu_reset_w)
 );
 
 // Xilinx placement pragmas:
@@ -219,11 +217,10 @@ assign uart_rxd_out  = txd_q;
 // led[2] -> LD4: CPU held in reset by debug bridge (should be ON initially)
 // led[3] -> LD5: System reset status (ON when in reset)
 
+// assign led[0] x;                   // LD2: Reserved for program
 // assign led[1] x;                   // LD3: Reserved for program
-assign led_controller[0] = led_w;             // LD2: Reserved for program
-assign led_controller[1] = led_w;             // LD3: Reserved for program
-assign led[0] = debug_cpu_reset_w;    // LD4: ON when CPU in debug reset
-assign led[1] = rst_sys_w;            // LD5: ON when system in reset
+assign led[2] = debug_cpu_reset_w;    // LD4: ON when CPU in debug reset
+assign led[3] = rst_sys_w;            // LD5: ON when system in reset
 
 assign qspi_dq[2] = 1'bz;
 assign qspi_dq[3] = 1'bz;

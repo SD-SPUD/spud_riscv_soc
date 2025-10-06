@@ -168,9 +168,9 @@ module soc
     ,output          uart_rxd_o
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
-    ,output [  1:0]  led_o
+    ,output [1:0]    led_o
 );
-// Internal wires
+
 wire  [  3:0]  axi_retime_arid_w;
 wire           axi_arb_out_arvalid_w;
 wire           axi_retime_arvalid_w;
@@ -314,6 +314,8 @@ wire           axi_tap_output2_bvalid_w;
 wire           axi_tap_output4_bready_w;
 wire  [ 31:0]  axi_tap_output1_wdata_w;
 wire           axi_tap_output4_bvalid_w;
+
+// Internal signals for led_controller
 wire 	       axi_tap_output5_awready_w;
 wire 	       axi_tap_output5_wready_w;
 wire 	       axi_tap_output5_bvalid_w;
@@ -331,8 +333,6 @@ wire 	       axi_tap_output5_bready_w;
 wire 	       axi_tap_output5_arvalid_w;
 wire [31:0]    axi_tap_output5_araddr_w;
 wire 	       axi_tap_output5_rready_w;
-
-
 
 irq_ctrl u_intc
 (
@@ -496,14 +496,14 @@ axi4_lite_tap u_axi_tap
     ,.outport_peripheral4_rvalid_i(axi_tap_output4_rvalid_w)
     ,.outport_peripheral4_rdata_i(axi_tap_output4_rdata_w)
     ,.outport_peripheral4_rresp_i(axi_tap_output4_rresp_w)
-    ,.outport_peripheral5_awready_i(axi_tap_output5_awready_w)
-    ,.outport_peripheral5_wready_i(axi_tap_output5_wready_w)
-    ,.outport_peripheral5_bvalid_i(axi_tap_output5_bvalid_w)
-    ,.outport_peripheral5_bresp_i(axi_tap_output5_bresp_w)
-    ,.outport_peripheral5_arready_i(axi_tap_output5_arready_w)
-    ,.outport_peripheral5_rvalid_i(axi_tap_output5_rvalid_w)
-    ,.outport_peripheral5_rdata_i(axi_tap_output5_rdata_w)
-    ,.outport_peripheral5_rresp_i(axi_tap_output5_rresp_w)
+    ,.outport_peripheral5_awready_i(axi_tap_output5_awready_w)	// new tap connections for led_controller
+    ,.outport_peripheral5_wready_i(axi_tap_output5_wready_w)	// new tap connections for led_controller
+    ,.outport_peripheral5_bvalid_i(axi_tap_output5_bvalid_w)	// new tap connections for led_controller
+    ,.outport_peripheral5_bresp_i(axi_tap_output5_bresp_w)	// new tap connections for led_controller
+    ,.outport_peripheral5_arready_i(axi_tap_output5_arready_w)	// new tap connections for led_controller
+    ,.outport_peripheral5_rvalid_i(axi_tap_output5_rvalid_w)	// new tap connections for led_controller
+    ,.outport_peripheral5_rdata_i(axi_tap_output5_rdata_w)	// new tap connections for led_controller
+    ,.outport_peripheral5_rresp_i(axi_tap_output5_rresp_w)	// new tap connections for led_controller
 
     // Outputs
     ,.inport_awready_o(axi_arb_out_awready_w)
@@ -578,15 +578,15 @@ axi4_lite_tap u_axi_tap
     ,.outport_peripheral4_arvalid_o(axi_tap_output4_arvalid_w)
     ,.outport_peripheral4_araddr_o(axi_tap_output4_araddr_w)
     ,.outport_peripheral4_rready_o(axi_tap_output4_rready_w)
-    ,.outport_peripheral5_awvalid_o(axi_tap_output5_awvalid_w)
-    ,.outport_peripheral5_awaddr_o(axi_tap_output5_awaddr_w)
-    ,.outport_peripheral5_wvalid_o(axi_tap_output5_wvalid_w)
-    ,.outport_peripheral5_wdata_o(axi_tap_output5_wdata_w)
-    ,.outport_peripheral5_wstrb_o(axi_tap_output5_wstrb_w)
-    ,.outport_peripheral5_bready_o(axi_tap_output5_bready_w)
-    ,.outport_peripheral5_arvalid_o(axi_tap_output5_arvalid_w)
-    ,.outport_peripheral5_araddr_o(axi_tap_output5_araddr_w)
-    ,.outport_peripheral5_rready_o(axi_tap_output5_rready_w)
+    ,.outport_peripheral5_awvalid_o(axi_tap_output5_awvalid_w)		// new tap connections for led_controller
+    ,.outport_peripheral5_awaddr_o(axi_tap_output5_awaddr_w)		// new tap connections for led_controller
+    ,.outport_peripheral5_wvalid_o(axi_tap_output5_wvalid_w)		// new tap connections for led_controller
+    ,.outport_peripheral5_wdata_o(axi_tap_output5_wdata_w)		// new tap connections for led_controller
+    ,.outport_peripheral5_wstrb_o(axi_tap_output5_wstrb_w)		// new tap connections for led_controller
+    ,.outport_peripheral5_bready_o(axi_tap_output5_bready_w)		// new tap connections for led_controller
+    ,.outport_peripheral5_arvalid_o(axi_tap_output5_arvalid_w)		// new tap connections for led_controller
+    ,.outport_peripheral5_araddr_o(axi_tap_output5_araddr_w)		// new tap connections for led_controller
+    ,.outport_peripheral5_rready_o(axi_tap_output5_rready_w)		// new tap connections for led_controller
 );
 
 
@@ -831,7 +831,6 @@ axi4_retime u_retime
 );
 
 
-
 gpio u_gpio
 (
     // Inputs
@@ -862,34 +861,32 @@ gpio u_gpio
     ,.intr_o(interrupt3_w)
 );
 
-
-led_controller u_led_controller
+led_controller u_led
 (
-    // Inputs
-     .clk_i(clk_i)
-    ,.rst_i(rst_i)
-    ,.cfg_awvalid_i(axi_tap_output5_awvalid_w)
-    ,.cfg_awaddr_i(axi_tap_output5_awaddr_w)
-    ,.cfg_wvalid_i(axi_tap_output5_wvalid_w)
-    ,.cfg_wdata_i(axi_tap_output5_wdata_w)
-    ,.cfg_wstrb_i(axi_tap_output5_wstrb_w)
-    ,.cfg_bready_i(axi_tap_output5_bready_w)
-    ,.cfg_arvalid_i(axi_tap_output5_arvalid_w)
-    ,.cfg_araddr_i(axi_tap_output5_araddr_w)
-    ,.cfg_rready_i(axi_tap_output5_rready_w)
+	//Inputs
+	.clk_i(clk_i),
+	.rst_i(rst_i),
+	.cfg_awvalid_i(axi_tap_output5_awvalid_w),
+	.cfg_awaddr_i(axi_tap_output5_awaddr_w),
+	.cfg_wvalid_i(axi_tap_output5_wvalid_w),
+	.cfg_wdata_i(axi_tap_output5_wdata_w),
+	.cfg_wstrb_i(axi_tap_output5_wstrb_w),
+	.cfg_bready_i(axi_tap_output5_bready_w),
+	.cfg_arvalid_i(axi_tap_output5_arvalid_w),
+	.cfg_araddr_i(axi_tap_output5_araddr_w),
+  	.cfg_rready_i(axi_tap_output5_rready_w),
 
-    // Outputs
-    ,.cfg_awready_o(axi_tap_output5_awready_w)
-    ,.cfg_wready_o(axi_tap_output5_wready_w)
-    ,.cfg_bvalid_o(axi_tap_output5_bvalid_w)
-    ,.cfg_bresp_o(axi_tap_output5_bresp_w)
-    ,.cfg_arready_o(axi_tap_output5_arready_w)
-    ,.cfg_rvalid_o(axi_tap_output5_rvalid_w)
-    ,.cfg_rdata_o(axi_tap_output5_rdata_w)
-    ,.cfg_rresp_o(axi_tap_output5_rresp_w)
-    ,.led_o(led_o)
+    	// Outputs
+    	.cfg_awready_o(axi_tap_output5_awready_w),
+    	.cfg_wready_o(axi_tap_output5_wready_w),
+    	.cfg_bvalid_o(axi_tap_output5_bvalid_w),
+    	.cfg_bresp_o(axi_tap_output5_bresp_w),
+    	.cfg_arready_o(axi_tap_output5_arready_w),
+    	.cfg_rvalid_o(axi_tap_output5_rvalid_w),
+    	.cfg_rdata_o(axi_tap_output5_rdata_w),
+    	.cfg_rresp_o(axi_tap_output5_rresp_w),
+    	.led_o(led_o)
+
 );
-
-
 
 endmodule

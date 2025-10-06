@@ -28,6 +28,7 @@ public:
     sc_out <sc_uint<32> > gpio_output_out;
     sc_in <sc_uint<32> > gpio_input_in;
     sc_out <sc_uint<32> > gpio_output_enable_out;
+    sc_out <sc_uint<2> > led_out;			// led_controller
 
     sc_in  <axi4_lite_master>  inport_in;
     sc_out <axi4_lite_slave> inport_out;
@@ -61,6 +62,7 @@ public:
         TRACE_SIGNAL(gpio_output_out);
         TRACE_SIGNAL(gpio_input_in);
         TRACE_SIGNAL(gpio_output_enable_out);
+        TRACE_SIGNAL(led_out);
         TRACE_SIGNAL(inport_in);
         TRACE_SIGNAL(inport_out);
         TRACE_SIGNAL(mem_in);
@@ -119,6 +121,7 @@ private:
     sc_signal <bool> m_uart_rxd_out;
     sc_signal <sc_uint<32> > m_gpio_output_out;
     sc_signal <sc_uint<32> > m_gpio_output_enable_out;
+    sc_signal <sc_uint<2> > m_led_out;				// led_controller
     sc_signal <bool> m_mem_awvalid_out;
     sc_signal <sc_uint<32> > m_mem_awaddr_out;
     sc_signal <sc_uint<4> > m_mem_awid_out;

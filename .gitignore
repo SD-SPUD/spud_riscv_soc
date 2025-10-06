@@ -51,3 +51,15 @@ xil_*.out
 *.wpc
 *.wdf
 *.lpr
+
+# Testbench build and simulation artifacts
+tb/build/
+tb/lib/
+tb/obj/
+tb/obj_verilated/
+tb/verilated/
+tb/*.vcd
+
+# Ignore local environment configuration
+.env
+

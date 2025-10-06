@@ -1,8 +1,12 @@
+ifneq ("$(wildcard .env)","")
+include .env
+endif
+
 ###############################################################################
 # Variables
 ###############################################################################
-VERILATOR_SRC ?= /usr/share/verilator/include
-SYSTEMC_HOME  ?= /usr/local/systemc-2.3.1
+VERILATOR_SRC ?= $(VERILATOR_HOME)/share/verilator/include
+SYSTEMC_HOME  ?= $(SYSTEMC_HOME)
 
 OBJ_DIR      ?= obj/
 EXE_DIR      ?= build/
@@ -30,7 +34,7 @@ CFLAGS       ?= -fpic -O2
 CFLAGS       += $(patsubst %,-I%,$(INCLUDE_PATH))
 CFLAGS       += -DVM_TRACE=1
 LDFLAGS      ?= -O2
-LDFLAGS      += -L$(SYSTEMC_HOME)/lib-linux64 
+LDFLAGS      += -L$(SYSTEMC_HOME)/lib-linux64
 LDFLAGS      += $(patsubst %,-L%,$(LIB_PATH))
 
 EXTRA_CLEAN_FILES ?=

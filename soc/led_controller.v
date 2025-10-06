@@ -164,4 +164,3 @@ module led_controller (
 		assign cfg_bresp_o  = 2'b0;
 
 endmodule
-

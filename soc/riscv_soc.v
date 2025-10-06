@@ -89,7 +89,7 @@ module riscv_soc
     ,output          uart_rxd_o
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
-    ,output [1:0]    led_o
+    ,output [  1:0]  led_o			// new led_controller signal 
     ,output          mem_awvalid_o
     ,output [ 31:0]  mem_awaddr_o
     ,output [  3:0]  mem_awid_o
@@ -437,7 +437,7 @@ soc u_soc
     ,.uart_rxd_o(uart_rxd_o)
     ,.gpio_output_o(gpio_output_o)
     ,.gpio_output_enable_o(gpio_output_enable_o)
-    ,.led_o(led_o)
+    ,.led_o(led_o)					// new led_controller signal
 );
 
 
