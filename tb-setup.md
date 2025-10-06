@@ -95,51 +95,6 @@ Edit `tb/makefile.build_sysc_tb`:
 CFLAGS += -DVM_TRACE=1
 ```
 
-3. **Fix testbench tracing compatibility:**
-
-Edit `tb/testbench_vbase.h` to make tracing conditional:
-```cpp
-#include <systemc.h>
-#include "verilated.h"
-#ifdef VM_TRACE
-#include "verilated_vcd_sc.h"
-#endif
-
-#ifdef VM_TRACE
-#define verilator_trace_enable(vcd_filename, dut) \
-        if (waves_enabled()) \
-        { \
-            Verilated::traceEverOn(true); \
-            VerilatedVcdSc *v_vcd = new VerilatedVcdSc; \
-            dut->trace_enable (v_vcd); \
-            v_vcd->open (vcd_filename); \
-            this->m_verilate_vcd = v_vcd; \
-        }
-#else
-#define verilator_trace_enable(vcd_filename, dut) // No tracing
-#endif
-
-// Make member variable conditional
-protected:
-#ifdef VM_TRACE
-    VerilatedVcdC   *m_verilate_vcd;
-#endif
-
-// Make abort function conditional
-virtual void abort(void)
-{
-    cout << "TB: Aborted at " << sc_time_stamp() << endl;
-#ifdef VM_TRACE
-    if (m_verilate_vcd)
-    {
-        m_verilate_vcd->flush();
-        m_verilate_vcd->close();
-        m_verilate_vcd = NULL;
-    }
-#endif
-}
-```
-
 ### Step 4: Build and Test
 
 1. **Clean and build:**
