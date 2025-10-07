@@ -39,42 +39,32 @@ autoconf  # Generates configure script from configure.ac
 ./configure --prefix=$HOME/verilator-3.890
 ```
 
-4. **Build (fix missing header issue):**
-```bash
-make -j4
-# If build fails with "verilog.h: No such file or directory", fix with:
-cd src/obj_dbg && ln -sf V3ParseBison.h verilog.h
-cd ../obj_opt && ln -sf V3ParseBison.h verilog.h
-cd ../..
-make -j4  # Continue build
-```
-
-5. **Install:**
-```bash
-make install
-```
-
-6. **Update PATH:**
+4. **Update PATH:**
 ```bash
 export PATH=$HOME/verilator-3.890/bin:$PATH
 # Verify: verilator --version should show "Verilator 3.890 2016-11-25"
 ```
 
-7. **Download g++:**
+5. **Download g++:**
 ```bash
 sudo apt update
 sudo apt install build-essential
 ```
 
-8. **Download and extract SystemC-2.3.3:**
+6. **Download and extract SystemC-2.3.3:**
 ```bash
 cd ~
 wget https://www.accellera.org/images/downloads/standards/systemc/systemc-2.3.3.tar.gz
 tar -xzf systemc-2.3.3.tar.gz
 cd systemc-2.3.3
+mkdir -p objdir
+cd objdir
+../configure --prefix=$HOME/systemc-2.3.3-install
+make -j$(nproc)
+make install
 ```
 
-9. **Install Toolchain (Ubuntu/Debian):**
+7. **Install Toolchain (Ubuntu/Debian):**
 ```bash
 cd ~
 sudo apt update
@@ -89,6 +79,21 @@ You should see output like:
 ```bash
 Checking RISC-V toolchain...
 Toolchain found: riscv32-unknown-elf-gcc (GCC) 12.2.0
+```
+
+8. **Build (fix missing header issue):**
+```bash
+make -j4
+# If build fails with "verilog.h: No such file or directory", fix with:
+cd src/obj_dbg && ln -sf V3ParseBison.h verilog.h
+cd ../obj_opt && ln -sf V3ParseBison.h verilog.h
+cd ../..
+make -j4  # Continue build
+```
+
+9. **Install:**
+```bash
+make install
 ```
 
 ### Step 3: Environment Setup (New!)
