@@ -59,9 +59,42 @@ make install
 export PATH=$HOME/verilator-3.890/bin:$PATH
 # Verify: verilator --version should show "Verilator 3.890 2016-11-25"
 ```
+
+7. **Download g++:**
+```bash
+sudo apt update
+sudo apt install build-essential
+```
+
+8. **Download and extract SystemC-2.3.3:**
+```bash
+cd ~
+wget https://www.accellera.org/images/downloads/standards/systemc/systemc-2.3.3.tar.gz
+tar -xzf systemc-2.3.3.tar.gz
+cd systemc-2.3.3
+```
+
+9. **Install Toolchain (Ubuntu/Debian):**
+```bash
+cd ~
+sudo apt update
+sudo apt install gcc-riscv64-unknown-elf
+```
+Check if the toolchain is properly installed:
+```bash
+cd /path/to/spud_rv32i_tools
+make check-toolchain
+```
+You should see output like:
+```bash
+Checking RISC-V toolchain...
+Toolchain found: riscv32-unknown-elf-gcc (GCC) 12.2.0
+```
+
 ### Step 3: Environment Setup (New!)
 7. **After installation, run the provided setup script to configure your local SystemC and Verilator paths:**
 ```bash
+cd /path/to/spud_riscv_soc/tb
 ./setup_env.sh
 ```
 
