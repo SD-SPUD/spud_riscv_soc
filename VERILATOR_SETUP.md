@@ -83,6 +83,7 @@ Toolchain found: riscv32-unknown-elf-gcc (GCC) 12.2.0
 
 8. **Build (fix missing header issue):**
 ```bash
+cd /path/to/spud_riscv_soc
 make -j4
 # If build fails with "verilog.h: No such file or directory", fix with:
 cd src/obj_dbg && ln -sf V3ParseBison.h verilog.h
