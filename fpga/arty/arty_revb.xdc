@@ -30,6 +30,30 @@ create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports { c
 #set_property -dict { PACKAGE_PIN H6    IOSTANDARD LVCMOS33 } [get_ports { led3_g }]; #IO_L24P_T3_35 Sch=led3_g
 #set_property -dict { PACKAGE_PIN K1    IOSTANDARD LVCMOS33 } [get_ports { led3_r }]; #IO_L23N_T3_35 Sch=led3_r
 
+## Data lines (level shifter 1)
+set_property -dict { PACKAGE_PIN T14  IOSTANDARD LVCMOS33 } [get_ports { R1 }];  # IO4 -> R1
+set_property -dict { PACKAGE_PIN U17  IOSTANDARD LVCMOS33 } [get_ports { G1 }];  # IO39 -> G1
+set_property -dict { PACKAGE_PIN R16  IOSTANDARD LVCMOS33 } [get_ports { B1 }];  # IO5 -> B1
+set_property -dict { PACKAGE_PIN R17  IOSTANDARD LVCMOS33 } [get_ports { R2 }];  # IO6 -> R2
+set_property -dict { PACKAGE_PIN U18  IOSTANDARD LVCMOS33 } [get_ports { G2 }];  # IO38 -> G2
+set_property -dict { PACKAGE_PIN V17  IOSTANDARD LVCMOS33 } [get_ports { B2 }];  # IO7 -> B2
+set_property -dict { PACKAGE_PIN U16  IOSTANDARD LVCMOS33 } [get_ports { E  }];  # IO37 -> E (row addr bit 4)
+set_property -dict { PACKAGE_PIN R15  IOSTANDARD LVCMOS33 } [get_ports { A  }];  # IO8 -> A (row addr bit 0)
+
+## Control / address (level shifter 2)
+set_property -dict { PACKAGE_PIN P13  IOSTANDARD LVCMOS33 } [get_ports { B  }];  # IO36 -> B
+set_property -dict { PACKAGE_PIN T15  IOSTANDARD LVCMOS33 } [get_ports { C  }];  # IO9  -> C
+set_property -dict { PACKAGE_PIN R13  IOSTANDARD LVCMOS33 } [get_ports { D  }];  # IO35 -> D
+set_property -dict { PACKAGE_PIN H16  IOSTANDARD LVCMOS33 } [get_ports { CLK }];  # IO10 -> CLK (panel shift clock)
+set_property -dict { PACKAGE_PIN V14  IOSTANDARD LVCMOS33 } [get_ports { LAT }];  # IO34 -> LAT
+set_property -dict { PACKAGE_PIN H17  IOSTANDARD LVCMOS33 } [get_ports { OE  }];  # IO11 -> OE (panel)
+
+## Level shifter OE (separate from panel OE)
+set_property -dict { PACKAGE_PIN G16  IOSTANDARD LVCMOS33 } [get_ports { LS_OE }];  # IO13 -> LS_OE
+
+## Active-low reset on BTN0
+set_property -dict { PACKAGE_PIN P17 IOSTANDARD LVCMOS33 } [get_ports { sys_rstn }];
+
 ##LEDs
 
 set_property -dict { PACKAGE_PIN H5    IOSTANDARD LVCMOS33 } [get_ports { led[0] }]; #IO_L24N_T3_35 Sch=led[4]

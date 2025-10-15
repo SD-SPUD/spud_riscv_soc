@@ -50,12 +50,19 @@ module matrix_controller #(parameter DISPLAY_WIDTH = 12) (		// 64x64 matrix, 409
 	output         	cfg_rvalid_o,
 	output [31:0]  	cfg_rdata_o,
 	output [1:0]   	cfg_rresp_o,
-	output [36:0]	updated_pixel_o 	// TEMP output signal for sim validation
-	// TBD
+	output [36:0]	updated_pixel_o,	// TEMP output signal for sim validation
+	output [14:0]   matrix_output_o
 );
 
 `define MATRIX_CTRL_DATA 32'h96000000
 `define MATRIX_CTRL_ADDR 32'h96000004
+
+matrix_core u_matrix (
+	.sys_clk(clk_i),
+	.sys_rstn(rst_i),   // active-low reset
+	.pixel_mem(pixel_mem),
+    .matrix_output(matrix_output_o)
+);
 
 //-----------------------------------------------------------------
 // Retime write datai
