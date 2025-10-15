@@ -28,6 +28,7 @@ When adding a new peripheral, follow these steps:
 1. **Signals and Bindings**
    - **`tb/testbench.h`**: Add `sc_signal`s for your new peripheral ports.
    - **`tb/riscv_soc.h`**: Connect DUT ports to the new signals.
+   - **`tb/riscv_soc.cpp`**: Connect signals from riscv_soc to verilator signals
 
 2. **Tracing (Optional)**
    - Add new signals to the `add_trace()` method in `testbench.h` to enable waveform debugging.
@@ -38,6 +39,6 @@ When adding a new peripheral, follow these steps:
 
 1. Ensure Verilator sees the new pins if the peripheral adds signals.  
 2. Re-run Verilator simulation generation:
-   ```bash
-   make -f makefile.generate_verilated
+```bash
+make -f makefile.generate_verilated
 
