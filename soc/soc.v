@@ -169,6 +169,8 @@ module soc
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
     ,output [1:0]    led_o
+    ,output [3:0]    read_port_o
+    ,output [3:0]    write_port_o
     ,output [36:0]   updated_pixel_o
 );
 
@@ -623,6 +625,8 @@ axi4_lite_tap u_axi_tap
     ,.outport_peripheral6_arvalid_o(axi_tap_output6_arvalid_w)		// new tap connections for matrix_controller
     ,.outport_peripheral6_araddr_o(axi_tap_output6_araddr_w)		// new tap connections for matrix_controller
     ,.outport_peripheral6_rready_o(axi_tap_output6_rready_w)		// new tap connections for matrix_controller
+    ,.read_port_o(read_port_o)						// tap value for debugging
+    ,.write_port_o(write_port_o)		// tap value for debugging
 );
 
 

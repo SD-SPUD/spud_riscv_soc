@@ -53,16 +53,8 @@ module led_controller (
 	output         	cfg_rvalid_o,
 	output [31:0]  	cfg_rdata_o,
 	output [1:0]   	cfg_rresp_o,
-	output [1:0]	led_o,
-	output 		write_en_w_dbg, // exposing internal signals for debug purposes
-	output		led_data_wr_q_dbg, 
-	output [1:0]	led_data_q_dbg
+	output [1:0]	led_o
 );
-
-	// exposing internal signals for debug purposes
-	assign write_en_w_dbg = write_en_w;
-	assign led_data_wr_q_dbg = led_data_wr_q;
-	assign led_data_q_dbg = led_data_q;
 
 	// AXI4-Lite Logic (taken from gpio.v)
 	//-----------------------------------------------------------------

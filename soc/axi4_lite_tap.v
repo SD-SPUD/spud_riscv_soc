@@ -223,9 +223,13 @@ module axi4_lite_tap
     ,output          outport_peripheral6_arvalid_o	// new peripheral signals
     ,output [ 31:0]  outport_peripheral6_araddr_o	// new peripheral signals
     ,output          outport_peripheral6_rready_o	// new peripheral signals
+    ,output [3:0]    read_port_o			// tap value for debugging
+    ,output [3:0]    write_port_o			// tap value for debugging
 );
 
-
+// Simulation Debugging
+assign read_port_o = read_port_q;
+assign write_port_o = write_port_q;
 
 `define ADDR_SEL_W         4
 `define PERIPH0_ADDR         32'h90000000

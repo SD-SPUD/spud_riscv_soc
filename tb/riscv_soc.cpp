@@ -55,9 +55,6 @@ riscv_soc::riscv_soc(sc_module_name name): sc_module(name)
     m_rtl->gpio_output_o(m_gpio_output_out);
     m_rtl->gpio_output_enable_o(m_gpio_output_enable_out);
     m_rtl->led_o(m_led_out);					// led_controller
-    m_rtl->write_en_w_dbg(m_write_en_w_dbg);					// led_controller
-    m_rtl->led_data_wr_q_dbg(m_led_data_wr_q_dbg);					// led_controller
-    m_rtl->led_data_q_dbg(m_led_data_q_dbg);					// led_controller
     m_rtl->read_port_o(m_read_port_o);					// led_controller
     m_rtl->write_port_o(m_write_port_o);					// led_controller
     m_rtl->updated_pixel_o(m_updated_pixel_o);					// matrix_controller
@@ -103,9 +100,6 @@ riscv_soc::riscv_soc(sc_module_name name): sc_module(name)
     sensitive << m_gpio_output_out;
     sensitive << m_gpio_output_enable_out;
     sensitive << m_led_out;					// led_controller
-    sensitive << m_write_en_w_dbg;					// led_controller
-    sensitive << m_led_data_wr_q_dbg;					// led_controller
-    sensitive << m_led_data_q_dbg;					// led_controller
     sensitive << m_read_port_o;					// led_controller
     sensitive << m_write_port_o;					// led_controller
     sensitive << m_updated_pixel_o;					// matrix_controller
@@ -159,9 +153,6 @@ void riscv_soc::async_outputs(void)
     gpio_output_out.write(m_gpio_output_out.read());
     gpio_output_enable_out.write(m_gpio_output_enable_out.read());
     led_out.write(m_led_out.read());				// led_controller
-    write_en_w_dbg.write(m_write_en_w_dbg.read());				// led_controller
-    led_data_wr_q_dbg.write(m_led_data_wr_q_dbg.read());				// led_controller
-    led_data_q_dbg.write(m_led_data_q_dbg.read());				// led_controller
     read_port_o.write(m_read_port_o.read());				// led_controller
     write_port_o.write(m_write_port_o.read());				// led_controller
     updated_pixel_o.write(m_updated_pixel_o.read());				// matrix_controller

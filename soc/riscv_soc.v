@@ -90,6 +90,8 @@ module riscv_soc
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
     ,output [  1:0]  led_o			// new led_controller signal 
+    ,output [  3:0]  read_port_o			// tap
+    ,output [  3:0]  write_port_o			// tap
     ,output [  36:0] updated_pixel_o // new matrix signal for sim
     ,output          mem_awvalid_o
     ,output [ 31:0]  mem_awaddr_o
@@ -439,6 +441,8 @@ soc u_soc
     ,.gpio_output_o(gpio_output_o)
     ,.gpio_output_enable_o(gpio_output_enable_o)
     ,.led_o(led_o)					// new led_controller signal
+    ,.read_port_o(read_port_o)					// tap 
+    ,.write_port_o(write_port_o)					// tap
     ,.updated_pixel_o(updated_pixel_o)
 );
 
