@@ -15,7 +15,7 @@ RTL_INCLUDE       = ../core/core/$(CORE)
 RTL_INCLUDE      += ../soc
 
 # Verilator options
-VERILATE_PARAMS  ?= --trace
+VERILATE_PARAMS  ?= --trace --trace-structs --trace-depth 10 
 VERILATOR_OPTS   ?= --pins-sc-uint
 
 TARGETS          ?= $(OUTPUT_DIR)/V$(SRC)

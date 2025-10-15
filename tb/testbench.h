@@ -46,6 +46,13 @@ public:
     sc_signal <sc_uint<32> >     gpio_input_in;
     sc_signal <sc_uint<32> >     gpio_output_enable_out;
     sc_signal <sc_uint<2> >     led_out;			// led_controller
+    sc_signal <bool>             write_en_w_dbg;
+    sc_signal <bool>             led_data_wr_q_dbg;
+    sc_signal <sc_uint<2> >     led_data_q_dbg;			// led_controller
+    sc_signal <sc_uint<4> >     read_port_o;			// led_controller
+    sc_signal <sc_uint<4> >     write_port_o;			// led_controller
+    sc_signal <sc_uint<37> >     updated_pixel_o;			// matrix_controller
+    
 
     //-----------------------------------------------------------------
     // process: Main loop for CPU execution
@@ -84,7 +91,13 @@ public:
         m_dut->gpio_output_out(gpio_output_out);
         m_dut->gpio_input_in(gpio_input_in);
         m_dut->gpio_output_enable_out(gpio_output_enable_out);
-	m_dut->led_out(led_out);					// led_controller
+	m_dut->led_out(led_out);
+	m_dut->write_en_w_dbg(write_en_w_dbg);	// led_controller
+	m_dut->led_data_wr_q_dbg(led_data_wr_q_dbg);
+	m_dut->led_data_q_dbg(led_data_q_dbg);
+	m_dut->read_port_o(read_port_o);
+	m_dut->write_port_o(write_port_o);
+	m_dut->updated_pixel_o(updated_pixel_o);
 
         // Memory
         m_mem = new tb_axi4_mem("MEM");

@@ -123,6 +123,14 @@ module axi4_lite_tap
     ,input           outport_peripheral5_rvalid_i	// new peripheral signals
     ,input  [ 31:0]  outport_peripheral5_rdata_i	// new peripheral signals
     ,input  [  1:0]  outport_peripheral5_rresp_i	// new peripheral signals
+    ,input           outport_peripheral6_awready_i	// new peripheral signals
+    ,input           outport_peripheral6_wready_i	// new peripheral signals
+    ,input           outport_peripheral6_bvalid_i	// new peripheral signals
+    ,input  [  1:0]  outport_peripheral6_bresp_i	// new peripheral signals
+    ,input           outport_peripheral6_arready_i	// new peripheral signals
+    ,input           outport_peripheral6_rvalid_i	// new peripheral signals
+    ,input  [ 31:0]  outport_peripheral6_rdata_i	// new peripheral signals
+    ,input  [  1:0]  outport_peripheral6_rresp_i	// new peripheral signals
 
     // Outputs
     ,output          inport_awready_o
@@ -206,11 +214,20 @@ module axi4_lite_tap
     ,output          outport_peripheral5_arvalid_o	// new peripheral signals
     ,output [ 31:0]  outport_peripheral5_araddr_o	// new peripheral signals
     ,output          outport_peripheral5_rready_o	// new peripheral signals
+    ,output          outport_peripheral6_awvalid_o	// new peripheral signals
+    ,output [ 31:0]  outport_peripheral6_awaddr_o	// new peripheral signals
+    ,output          outport_peripheral6_wvalid_o	// new peripheral signals
+    ,output [ 31:0]  outport_peripheral6_wdata_o	// new peripheral signals
+    ,output [  3:0]  outport_peripheral6_wstrb_o	// new peripheral signals
+    ,output          outport_peripheral6_bready_o	// new peripheral signals
+    ,output          outport_peripheral6_arvalid_o	// new peripheral signals
+    ,output [ 31:0]  outport_peripheral6_araddr_o	// new peripheral signals
+    ,output          outport_peripheral6_rready_o	// new peripheral signals
 );
 
 
 
-`define ADDR_SEL_W         3
+`define ADDR_SEL_W         4
 `define PERIPH0_ADDR         32'h90000000
 `define PERIPH0_MASK         32'hff000000
 `define PERIPH1_ADDR         32'h91000000
@@ -223,6 +240,9 @@ module axi4_lite_tap
 `define PERIPH4_MASK         32'hff000000
 `define PERIPH5_ADDR	     32'h95000000	// new peripheral address (led_controller)
 `define PERIPH5_MASK         32'hff000000	// new peripheral mask (led_controller)
+`define PERIPH6_ADDR	     32'h96000000	// new peripheral address (matrix_controller)
+`define PERIPH6_MASK         32'hff000000	// new peripheral mask (matrix_controller)
+
 
 //-----------------------------------------------------------------
 // AXI: Read
@@ -242,6 +262,7 @@ begin
     if ((inport_araddr_i & `PERIPH3_MASK) == `PERIPH3_ADDR) read_port_r = `ADDR_SEL_W'd4;
     if ((inport_araddr_i & `PERIPH4_MASK) == `PERIPH4_ADDR) read_port_r = `ADDR_SEL_W'd5;
     if ((inport_araddr_i & `PERIPH5_MASK) == `PERIPH5_ADDR) read_port_r = `ADDR_SEL_W'd6;	// led_controller
+    if ((inport_araddr_i & `PERIPH6_MASK) == `PERIPH6_ADDR) read_port_r = `ADDR_SEL_W'd7;	// matrix_controller
 
 end
 
@@ -303,6 +324,9 @@ assign outport_peripheral4_rready_o  = inport_rready_i;
 assign outport_peripheral5_arvalid_o = inport_arvalid_i & read_accept_w & (read_port_r == `ADDR_SEL_W'd6);	// led_controller
 assign outport_peripheral5_araddr_o  = inport_araddr_i;	// led_controller
 assign outport_peripheral5_rready_o  = inport_rready_i; // led_controller
+assign outport_peripheral6_arvalid_o = inport_arvalid_i & read_accept_w & (read_port_r == `ADDR_SEL_W'd7);	// matrix_controller
+assign outport_peripheral6_araddr_o  = inport_araddr_i;	// matrix_controller
+assign outport_peripheral6_rready_o  = inport_rready_i; // matrix_controller
 
 reg        outport_rvalid_r;
 reg [31:0] outport_rdata_r;
@@ -361,6 +385,14 @@ begin
         outport_rid_r    = arid_q;
         outport_rlast_r  = 1'b1;
     end
+    `ADDR_SEL_W'd7:						// matrix_controller
+    begin
+        outport_rvalid_r = outport_peripheral6_rvalid_i;
+        outport_rdata_r  = outport_peripheral6_rdata_i;
+        outport_rresp_r  = outport_peripheral6_rresp_i;
+        outport_rid_r    = arid_q;
+        outport_rlast_r  = 1'b1;
+    end
     default:
     begin
         outport_rvalid_r = outport_rvalid_i;
@@ -394,6 +426,8 @@ begin
         inport_arready_r = outport_peripheral4_arready_i;
     `ADDR_SEL_W'd6:
         inport_arready_r = outport_peripheral5_arready_i;	// led_controller
+    `ADDR_SEL_W'd7:
+    inport_arready_r = outport_peripheral6_arready_i;	// matrix_controller
     default:
         inport_arready_r = outport_arready_i;
     endcase
@@ -419,6 +453,7 @@ begin
     if ((inport_awaddr_i & `PERIPH3_MASK) == `PERIPH3_ADDR) write_port_r = `ADDR_SEL_W'd4;
     if ((inport_awaddr_i & `PERIPH4_MASK) == `PERIPH4_ADDR) write_port_r = `ADDR_SEL_W'd5;
     if ((inport_awaddr_i & `PERIPH5_MASK) == `PERIPH5_ADDR) write_port_r = `ADDR_SEL_W'd6;	// led_controller
+    if ((inport_awaddr_i & `PERIPH6_MASK) == `PERIPH6_ADDR) write_port_r = `ADDR_SEL_W'd7;	// matrix_controller
 end
 
 wire write_incr_w = (inport_awvalid_i && inport_awready_o);
@@ -502,6 +537,12 @@ assign outport_peripheral5_wvalid_o  = inport_wvalid_i & write_accept_w & (write
 assign outport_peripheral5_wdata_o   = inport_wdata_i;									// led_controller			
 assign outport_peripheral5_wstrb_o   = inport_wstrb_i;									// led_controller
 assign outport_peripheral5_bready_o  = inport_bready_i;									// led_controller
+assign outport_peripheral6_awvalid_o = inport_awvalid_i & write_accept_w & (write_port_r == `ADDR_SEL_W'd7);		// matrix_controller
+assign outport_peripheral6_awaddr_o  = inport_awaddr_i;									// matrix_controller			
+assign outport_peripheral6_wvalid_o  = inport_wvalid_i & write_accept_w & (write_port_r == `ADDR_SEL_W'd7);		// matrix_controller
+assign outport_peripheral6_wdata_o   = inport_wdata_i;									// matrix_controller			
+assign outport_peripheral6_wstrb_o   = inport_wstrb_i;									// matrix_controller
+assign outport_peripheral6_bready_o  = inport_bready_i;									// matrix_controller
 
 reg        outport_bvalid_r;
 reg [1:0]  outport_bresp_r;
@@ -544,6 +585,12 @@ begin
     begin
         outport_bvalid_r = outport_peripheral5_bvalid_i;
         outport_bresp_r  = outport_peripheral5_bresp_i;
+        outport_bid_r    = awid_q;
+    end
+    `ADDR_SEL_W'd7:						// matrix_controller
+    begin
+        outport_bvalid_r = outport_peripheral6_bvalid_i;
+        outport_bresp_r  = outport_peripheral6_bresp_i;
         outport_bid_r    = awid_q;
     end
     default:
@@ -595,6 +642,11 @@ begin
     begin
         inport_awready_r = outport_peripheral5_awready_i;
         inport_wready_r  = outport_peripheral5_wready_i;
+    end
+    `ADDR_SEL_W'd7:
+    begin
+        inport_awready_r = outport_peripheral6_awready_i;
+        inport_wready_r  = outport_peripheral6_wready_i;
     end
     default:
     begin
