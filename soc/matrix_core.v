@@ -3,19 +3,28 @@
 
 module matrix_core #(
   parameter ON_TIME = 20000,       // cycles each row is enabled
-  parameter FLASH_PERIOD = 60,     // number of full frames before color toggles
-  parameter OE_POLARITY_HIGH = 1   // 1 if OE=1 blanks panel, 0 if OE=0 blanks
+  parameter OE_POLARITY_HIGH = 1,  // 1 if OE=1 blanks panel, 0 if OE=0 blanks
+  parameter DISPLAY_WIDTH = 12     // 12 bits for 4096 pixels (64x64)
 ) (
-  input  wire sys_clk,
-  input  wire sys_rstn,   // active-low reset
-  input [23:0] pixel_mem [0:4095],
+  input  wire clk_i,
+  input  wire rst_i,
+  input  wire [23:0] pixel_write_data,   // active-low reset
+  input  wire [11:0] pixel_write_addr,   // active-low reset
   output reg [14:0] matrix_output
 );
 
+reg [23:0] 		pixel_mem [0:4095];
+
+// Simulation only
+integer i;
+initial begin
+    for (i = 0; i < 4096; i = i + 1)
+        pixel_mem[i] = 24'h0;
+end
+
 localparam WIDTH      = 64;
 localparam SCAN_STEPS = 32; // 64 rows / 2 halves = 32 steps
-
-wire R1, G2, B2, 
+localparam DISPLAY_MID_INDEX = 2047;
 
 // state machine
 localparam S_IDLE  = 2'd0,
@@ -25,13 +34,25 @@ localparam S_IDLE  = 2'd0,
 
 reg [1:0] state;
 reg [6:0] col_cnt;
+reg [6:0] row_cnt;
 reg [4:0] scan_idx;
 reg [1:0] shift_phase;
 reg [31:0] on_counter;
+reg R1, G1, B1;
+reg R2, G2, B2;
+reg A, B, C, D, E;
+reg CLK, LAT, OE;
 
 // color flash logic
-reg color_toggle;              // 0 = red, 1 = blue
 reg [15:0] frame_counter;      // count full display refreshes
+
+reg [23:0] pixel_display_data_row_1;
+reg [23:0] pixel_display_data_row_2;
+
+// update mem
+always @(posedge clk_i) begin
+    pixel_mem[pixel_write_addr] <= pixel_write_data;
+end
 
 // helper: return correct OE level for "blank"
 function oe_blank_val;
@@ -44,20 +65,19 @@ function oe_blank_val;
   end
 endfunction
 
-
-always @(posedge sys_clk or negedge sys_rstn) begin
-  if (!sys_rstn) begin
+always @(posedge clk_i or negedge rst_i) begin
+  if (!rst_i) begin
     state         <= S_IDLE;
     col_cnt       <= 0;
+    row_cnt <= 0;
     scan_idx      <= 0;
     shift_phase   <= 0;
     on_counter    <= 0;
     frame_counter <= 0;
-    color_toggle  <= 0;
 
     R1 <= 0; G1 <= 0; B1 <= 0;
     R2 <= 0; G2 <= 0; B2 <= 0;
-    A  <= 0; B  <= 0; C  <= 0; D  <= 0; E  <= 0;
+    A <= 0; B  <= 0; C  <= 0; D  <= 0; E  <= 0;
 
     CLK <= 0;
     LAT <= 0;
@@ -73,6 +93,8 @@ always @(posedge sys_clk or negedge sys_rstn) begin
         C <= scan_idx[2];
         D <= scan_idx[3];
         E <= scan_idx[4];
+        pixel_display_data_row_1 <= pixel_mem[row_cnt + col_cnt];
+        pixel_display_data_row_2 <= pixel_mem[row_cnt + col_cnt + DISPLAY_MID_INDEX];
         LAT <= 0;
         CLK <= 0;
         state <= S_SHIFT;
@@ -83,16 +105,12 @@ always @(posedge sys_clk or negedge sys_rstn) begin
           2'd0: begin
             CLK <= 0;
             LAT <= 0;
-            // --- Choose color based on toggle ---
-            if (color_toggle == 0) begin
-              // RED
-              R1 <= 1; G1 <= 0; B1 <= 0;
-              R2 <= 1; G2 <= 0; B2 <= 0;
-            end else begin
-              // BLUE
-              R1 <= 0; G1 <= 0; B1 <= 1;
-              R2 <= 0; G2 <= 0; B2 <= 1;
-            end
+            R1 <= pixel_display_data_row_1[7:0] != 0;
+            G1 <= pixel_display_data_row_1[15:8] != 0;
+            B1 <= pixel_display_data_row_1[23:16] != 0;
+            R2 <= pixel_display_data_row_2[7:0] != 0;
+            G2 <= pixel_display_data_row_2[15:8] != 0;
+            B2 <= pixel_display_data_row_2[23:16] != 0;
             shift_phase <= 2'd1;
           end
 
@@ -110,6 +128,7 @@ always @(posedge sys_clk or negedge sys_rstn) begin
               LAT <= 1;
               shift_phase <= 2'd0;
               state <= S_LATCH;
+              row_cnt <= row_cnt + 1;
             end
           end
         endcase
@@ -129,11 +148,6 @@ always @(posedge sys_clk or negedge sys_rstn) begin
           if (scan_idx == SCAN_STEPS-1) begin
             scan_idx <= 0;
             frame_counter <= frame_counter + 1;
-            // toggle color after FLASH_PERIOD full frames
-            if (frame_counter >= FLASH_PERIOD) begin
-              frame_counter <= 0;
-              color_toggle <= ~color_toggle;
-            end
           end else begin
             scan_idx <= scan_idx + 1;
           end
@@ -146,7 +160,6 @@ end
 
 // always keep the level shifter enabled
 assign LS_OE = 1'b1;
-assign {R1, G1, B1, R2, G2, B2, A, B, C, D, E, CLK, LAT, OE, LS_OE} = matrix_output;
 
 
 endmodule
