@@ -28,6 +28,11 @@ public:
     sc_out <sc_uint<32> > gpio_output_out;
     sc_in <sc_uint<32> > gpio_input_in;
     sc_out <sc_uint<32> > gpio_output_enable_out;
+    sc_out <sc_uint<2> > led_out;			// led_controller
+    sc_out <sc_uint<4> > read_port_o;			// led_controller
+    sc_out <sc_uint<4> > write_port_o;			// led_controller
+    sc_out <sc_uint<37> > updated_pixel_o;			// matrix_controller
+    sc_out <sc_uint<15> > matrix_output_o;			// matrix pins
 
     sc_in  <axi4_lite_master>  inport_in;
     sc_out <axi4_lite_slave> inport_out;
@@ -61,6 +66,12 @@ public:
         TRACE_SIGNAL(gpio_output_out);
         TRACE_SIGNAL(gpio_input_in);
         TRACE_SIGNAL(gpio_output_enable_out);
+        TRACE_SIGNAL(led_out);
+        TRACE_SIGNAL(read_port_o);
+        TRACE_SIGNAL(write_port_o);
+        TRACE_SIGNAL(updated_pixel_o);
+        TRACE_SIGNAL(matrix_output_o);
+
         TRACE_SIGNAL(inport_in);
         TRACE_SIGNAL(inport_out);
         TRACE_SIGNAL(mem_in);
@@ -114,11 +125,18 @@ private:
     sc_signal <sc_uint<32> > m_inport_rdata_out;
     sc_signal <sc_uint<2> > m_inport_rresp_out;
     sc_signal <bool> m_spi_clk_out;
+    sc_signal <sc_uint<2> > m_led_data_q_dbg;				// led_controller
     sc_signal <bool> m_spi_mosi_out;
     sc_signal <bool> m_spi_cs_out;
     sc_signal <bool> m_uart_rxd_out;
     sc_signal <sc_uint<32> > m_gpio_output_out;
     sc_signal <sc_uint<32> > m_gpio_output_enable_out;
+    sc_signal <sc_uint<2> > m_led_out;				// led_controller
+    sc_signal <sc_uint<4> > m_read_port_o;				// led_controller
+    sc_signal <sc_uint<4> > m_write_port_o;				// led_controller
+    sc_signal <sc_uint<37> > m_updated_pixel_o;				// matrix_controller
+    sc_signal <sc_uint<15> > m_matrix_output_o;		
+
     sc_signal <bool> m_mem_awvalid_out;
     sc_signal <sc_uint<32> > m_mem_awaddr_out;
     sc_signal <sc_uint<4> > m_mem_awid_out;

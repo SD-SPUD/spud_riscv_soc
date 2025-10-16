@@ -521,7 +521,7 @@ assign req_error_o = axi_error_q;
 //-----------------------------------------------------------------
 // AXI Write channel (unused)
 assign axi_awvalid_o = 1'b0;
-assign axi_awaddr_o  = 32'b0;
+assign axi_awaddr_o  = 32'hF0F0_F0F0;
 assign axi_awid_o    = 4'b0;
 assign axi_awlen_o   = 8'b0;
 assign axi_awburst_o = 2'b0;

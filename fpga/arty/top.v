@@ -6,6 +6,7 @@ module top
     input                   clk100mhz,
     input                   i_rst,
     output [3:0]            led,
+    output [14:0]           matrix,
     output                  uart_rxd_out,
     input                   uart_txd_in,
 
@@ -183,6 +184,12 @@ u_top
     .gpio_output_o(),
     .gpio_output_enable_o(),
     .gpio_input_i(32'b0),
+
+    // LED
+    .led_o(led[1:0]),		// led_controller
+
+    // MATRIX
+    .matrix_output_o(matrix),
 
     // UART
     .dbg_rxd_o(dbg_txd_w),

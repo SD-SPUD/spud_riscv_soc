@@ -54,6 +54,11 @@ riscv_soc::riscv_soc(sc_module_name name): sc_module(name)
     m_rtl->uart_rxd_o(m_uart_rxd_out);
     m_rtl->gpio_output_o(m_gpio_output_out);
     m_rtl->gpio_output_enable_o(m_gpio_output_enable_out);
+    m_rtl->led_o(m_led_out);					// led_controller
+    m_rtl->read_port_o(m_read_port_o);					// led_controller
+    m_rtl->write_port_o(m_write_port_o);					// led_controller
+    m_rtl->updated_pixel_o(m_updated_pixel_o);					// matrix_controller
+    m_rtl->updated_pixel_o(m_matrix_output_o);
     m_rtl->mem_awvalid_o(m_mem_awvalid_out);
     m_rtl->mem_awaddr_o(m_mem_awaddr_out);
     m_rtl->mem_awid_o(m_mem_awid_out);
@@ -95,6 +100,11 @@ riscv_soc::riscv_soc(sc_module_name name): sc_module(name)
     sensitive << m_uart_rxd_out;
     sensitive << m_gpio_output_out;
     sensitive << m_gpio_output_enable_out;
+    sensitive << m_led_out;					// led_controller
+    sensitive << m_read_port_o;					// led_controller
+    sensitive << m_write_port_o;					// led_controller
+    sensitive << m_updated_pixel_o;					// matrix_controller
+    sensitive << m_matrix_output_o;
     sensitive << m_mem_awvalid_out;
     sensitive << m_mem_awaddr_out;
     sensitive << m_mem_awid_out;
@@ -144,7 +154,11 @@ void riscv_soc::async_outputs(void)
     uart_rxd_out.write(m_uart_rxd_out.read());
     gpio_output_out.write(m_gpio_output_out.read());
     gpio_output_enable_out.write(m_gpio_output_enable_out.read());
-
+    led_out.write(m_led_out.read());				// led_controller
+    read_port_o.write(m_read_port_o.read());				// led_controller
+    write_port_o.write(m_write_port_o.read());				// led_controller
+    updated_pixel_o.write(m_updated_pixel_o.read());				// matrix_controller
+    matrix_output_o.write(m_matrix_output_o.read());
     axi4_lite_master inport_i = inport_in.read();
     m_inport_awvalid_in.write(inport_i.AWVALID); 
     m_inport_awaddr_in.write(inport_i.AWADDR); 

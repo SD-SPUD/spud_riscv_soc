@@ -1,0 +1,121 @@
+@startuml Debug Bridge Architecture
+
+!define RECTANGLE class
+!define INTERFACE interface
+
+title RISC-V SoC Debug Bridge Architecture
+
+' Define color scheme for debug focus
+!define DEBUG_COLOR #FFB6C1
+!define CPU_COLOR #FFE4B5
+!define MEMORY_COLOR #E6F3FF
+!define PERIPHERAL_COLOR #F0FFF0
+!define INTERCONNECT_COLOR #FFE4E1
+!define BRIDGE_COLOR #DDA0DD
+
+package "RISC-V SoC Debug Infrastructure" {
+
+  ' External Debug Interface
+  rectangle "External Debug Host\n(UART/JTAG)" as debug_host #DEBUG_COLOR {
+    note right : Debug host connects via\nUART or JTAG interface\nfor system debug and\ncode loading
+  }
+
+  rectangle "Debug Bridge\n(UART to AXI)" as uart_debug_bridge #DEBUG_COLOR {
+    note bottom : Converts UART commands\nto AXI4-Lite transactions\nfor memory/register access
+  }
+
+  ' AXI4-Lite to AXI4 Converter (Debug Path)
+  rectangle "AXI4-Lite to AXI4\nConverter" as axi_conv #BRIDGE_COLOR {
+    note bottom : **Critical Debug Component**\nConverts debug AXI4-Lite\nto full AXI4 protocol\nfor system access
+  }
+
+  ' RISC-V Core with Debug Focus
+  package "RISC-V Core Complex" #CPU_COLOR {
+    rectangle "RISC-V Core\n(RV32IM)" as cpu_core {
+      note top : CPU can be halted/\nstepped via debug interface
+    }
+
+    rectangle "D-Port Bridge\n(Data Port Bridge)" as dport_bridge #BRIDGE_COLOR {
+      note bottom : **Key Debug Component**\nBridges CPU data port to AXI4\nAllows debug access to:\n• CPU registers\n• Memory locations\n• Cache control
+    }
+
+    rectangle "I-Cache\n(16KB, 2-way)" as icache #MEMORY_COLOR {
+      note right : Debug can:\n• Flush cache\n• Invalidate lines\n• Monitor cache hits
+    }
+  }
+
+  ' Interconnect with Debug Highlighting
+  package "AXI Interconnect" #INTERCONNECT_COLOR {
+    rectangle "AXI4 Arbiter\n(3-to-1)" as axi_arb {
+      note bottom : **Debug Priority:**\n1. External debug (highest)\n2. CPU data access\n3. CPU instruction fetch
+    }
+
+    rectangle "AXI4-Lite Tap\n(Address Decoder)" as axi_tap {
+      note bottom : Routes debug transactions\nto specific peripherals\nbased on address decode
+    }
+
+    rectangle "AXI4 Retime\nBuffer" as axi_retime {
+      note bottom : Provides timing isolation\nfor debug transactions\nto external memory
+    }
+  }
+
+  ' Memory and Peripherals (Debug Accessible)
+  rectangle "External Memory\n(DDR/SDRAM)" as ext_memory #MEMORY_COLOR {
+    note bottom : **Debug Features:**\n• Load programs\n• Read/write data\n• Memory dumps\n• Breakpoint support
+  }
+
+  package "Memory-Mapped Peripherals" #PERIPHERAL_COLOR {
+    rectangle "IRQ Controller\n0x9000_0000" as irq_ctrl {
+      note right : Debug access to:\n• Interrupt status\n• Enable/disable IRQs\n• Force interrupts
+    }
+
+    rectangle "Timer\n0x9100_0000" as timer {
+      note right : Debug control:\n• Read counters\n• Set compare values\n• Timer control
+    }
+
+    rectangle "UART\n0x9200_0000" as uart {
+      note right : Debug console:\n• Send/receive data\n• Status monitoring\n• Baud rate control
+    }
+
+    rectangle "SPI\n0x9300_0000" as spi {
+      note right : Debug SPI devices:\n• Flash programming\n• Device control\n• Status monitoring
+    }
+
+    rectangle "GPIO\n0x9400_0000" as gpio {
+      note right : Debug I/O:\n• Pin control\n• Status reading\n• Interrupt debugging
+    }
+  }
+}
+
+' Debug Data Flow (Highlighted in red)
+debug_host --> uart_debug_bridge : **Debug Commands**
+uart_debug_bridge --> axi_conv : **AXI4-Lite**
+axi_conv --> axi_arb : **AXI4 (Debug Priority)**
+
+' CPU Debug Interface
+cpu_core <--> dport_bridge : **CPU Data Port**
+dport_bridge --> axi_arb : **AXI4 (Data)**
+
+' Instruction Cache Debug
+cpu_core --> icache : **Instruction Fetch**
+icache --> axi_arb : **AXI4 (Instructions)**
+
+' Interconnect Flow
+axi_arb --> axi_tap : **Arbitrated AXI4**
+axi_tap --> axi_retime : **Memory Access**
+axi_retime --> ext_memory : **AXI4 to Memory**
+
+' Peripheral Debug Access
+axi_tap --> irq_ctrl : **Debug Access**
+axi_tap --> timer : **Debug Access**
+axi_tap --> uart : **Debug Access**
+axi_tap --> spi : **Debug Access**
+axi_tap --> gpio : **Debug Access**
+
+' Debug Capabilities Box
+note bottom : **Debug Capabilities:**\n• **Program Loading**: Load ELF files via UART to memory\n• **CPU Control**: Start/stop/step CPU execution\n• **Memory Access**: Read/write any memory location\n• **Register Access**: CPU and peripheral register access\n• **Peripheral Control**: Configure and monitor all peripherals\n• **Cache Management**: Flush/invalidate instruction cache\n• **Interrupt Debugging**: Monitor and control interrupt flow\n• **Real-time Monitoring**: Live system state observation
+
+' Debug Use Cases Box
+note top of debug_host : **Debug Use Cases:**\n• **Bring-up**: Initial system validation\n• **Software Debug**: Program loading and execution\n• **Hardware Debug**: Register and signal monitoring\n• **Performance Analysis**: Cache hit rates, timing\n• **Failure Analysis**: Post-mortem debugging\n• **Production Test**: Automated testing via debug port
+
+@enduml
