@@ -32,7 +32,7 @@ public:
     sc_out <sc_uint<4> > read_port_o;			// led_controller
     sc_out <sc_uint<4> > write_port_o;			// led_controller
     sc_out <sc_uint<37> > updated_pixel_o;			// matrix_controller
-    
+    sc_out <sc_uint<15> > matrix_output_o;			// matrix pins
 
     sc_in  <axi4_lite_master>  inport_in;
     sc_out <axi4_lite_slave> inport_out;
@@ -70,6 +70,7 @@ public:
         TRACE_SIGNAL(read_port_o);
         TRACE_SIGNAL(write_port_o);
         TRACE_SIGNAL(updated_pixel_o);
+        TRACE_SIGNAL(matrix_output_o);
 
         TRACE_SIGNAL(inport_in);
         TRACE_SIGNAL(inport_out);
@@ -134,7 +135,8 @@ private:
     sc_signal <sc_uint<4> > m_read_port_o;				// led_controller
     sc_signal <sc_uint<4> > m_write_port_o;				// led_controller
     sc_signal <sc_uint<37> > m_updated_pixel_o;				// matrix_controller
-    
+    sc_signal <sc_uint<15> > m_matrix_output_o;		
+
     sc_signal <bool> m_mem_awvalid_out;
     sc_signal <sc_uint<32> > m_mem_awaddr_out;
     sc_signal <sc_uint<4> > m_mem_awid_out;

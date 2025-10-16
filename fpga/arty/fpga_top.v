@@ -91,6 +91,7 @@ module fpga_top
     ,output [ 31:0]  gpio_output_o
     ,output [ 31:0]  gpio_output_enable_o
     ,output [ 1:0]   led_o			// led_controller
+    ,output [14:0]   matrix_output_o
     ,output          debug_cpu_reset_o
 );
 
@@ -287,6 +288,7 @@ riscv_soc u_soc
     ,.gpio_output_o(gpio_output_o)
     ,.gpio_output_enable_o(gpio_output_enable_o)
     ,.led_o(led_o)					// led_controller
+    ,.matrix_output_o(matrix_output_o) // matrix pins
     ,.mem_awvalid_o(axi_cdc_wr_awvalid_w)
     ,.mem_awaddr_o(axi_cdc_wr_awaddr_w)
     ,.mem_awid_o(axi_cdc_wr_awid_w)

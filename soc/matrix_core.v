@@ -15,7 +15,7 @@ module matrix_core #(
 localparam WIDTH      = 64;
 localparam SCAN_STEPS = 32; // 64 rows / 2 halves = 32 steps
 
-wire R1, G2, B2, 
+wire R1, G1, B1, R2, G2, B2, A, B, C, D, E, CLK, LAT, OE, LS_OE;  
 
 // state machine
 localparam S_IDLE  = 2'd0,

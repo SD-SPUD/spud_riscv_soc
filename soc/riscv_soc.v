@@ -93,6 +93,7 @@ module riscv_soc
     ,output [  3:0]  read_port_o			// tap
     ,output [  3:0]  write_port_o			// tap
     ,output [  36:0] updated_pixel_o // new matrix signal for sim
+    ,output [  14:0] matrix_output_o //matrix pin output
     ,output          mem_awvalid_o
     ,output [ 31:0]  mem_awaddr_o
     ,output [  3:0]  mem_awid_o
@@ -444,6 +445,7 @@ soc u_soc
     ,.read_port_o(read_port_o)					// tap 
     ,.write_port_o(write_port_o)					// tap
     ,.updated_pixel_o(updated_pixel_o)
+    ,.matrix_output_o(matrix_output_o)
 );
 
 
