@@ -27,7 +27,7 @@ TO DO:
 
 
 
-module matrix_controller #(parameter DISPLAY_WIDTH = 12) (		// 64x64 matrix, 4096 pixels, 2^12 = 4096, so 12 bits required for pixel addr
+module matrix_controller (		// 64x64 matrix, 4096 pixels, 2^12 = 4096, so 12 bits required for pixel addr
 	// Inputs
 	input 		clk_i,
 	input		rst_i,
@@ -54,15 +54,10 @@ module matrix_controller #(parameter DISPLAY_WIDTH = 12) (		// 64x64 matrix, 409
 	output [14:0]   matrix_output_o
 );
 
+localparam DISPLAY_WIDTH = 12;		// 12 bits for 4096 pixels (64x64)
+
 `define MATRIX_CTRL_DATA 32'h96000000
 `define MATRIX_CTRL_ADDR 32'h96000004
-
-matrix_core u_matrix (
-	.sys_clk(clk_i),
-	.sys_rstn(rst_i),   // active-low reset
-	.pixel_mem(pixel_mem),
-    .matrix_output(matrix_output_o)
-);
 
 //-----------------------------------------------------------------
 // Retime write datai
@@ -88,22 +83,22 @@ assign cfg_arready_o = ~cfg_rvalid_o;
 assign cfg_awready_o = ~cfg_bvalid_o && ~cfg_arvalid_i; 
 assign cfg_wready_o  = cfg_awready_o;
 
-//-----------------------------------------------------------------
-// Matrix Register Logic (NEW!!)
-//-----------------------------------------------------------------
 // Internal signals
-reg [23:0] 		pixel_mem [0:4095];
 reg [23:0]		pixel_write_data;
+reg [DISPLAY_WIDTH-1:0] pixel_write_addr;
+
+matrix_core #(
+	.DISPLAY_WIDTH(DISPLAY_WIDTH)
+) u_matrix (
+	.clk_i(clk_i),
+	.rst_i(rst_i),   // active-low resetz
+	.pixel_write_data(pixel_write_data),
+	.pixel_write_addr(pixel_write_addr),
+    .matrix_output(matrix_output_o)
+);
 
 wire write_data_en = write_en_w && (cfg_awaddr_i == `MATRIX_CTRL_DATA);
 wire write_addr_en = write_en_w && (cfg_awaddr_i == `MATRIX_CTRL_ADDR);
-
-// Simulation only
-integer i;
-initial begin
-    for (i = 0; i < 4096; i = i + 1)
-        pixel_mem[i] = 24'h0;
-end
 
 always @(posedge clk_i) begin
 	if(rst_i) begin
@@ -111,11 +106,11 @@ always @(posedge clk_i) begin
 	end else begin
 		if(write_data_en) pixel_write_data <= cfg_wdata_i[23:0];
 
-		if (write_addr_en) pixel_mem[cfg_wdata_i[DISPLAY_WIDTH-1:0]] <= pixel_write_data;
+		if (write_addr_en) pixel_write_addr <= cfg_wdata_i[DISPLAY_WIDTH-1:0];
 	end
 end
 
-assign updated_pixel_o = {write_addr_en, pixel_mem[cfg_wdata_i[DISPLAY_WIDTH-1:0]], cfg_wdata_i[DISPLAY_WIDTH-1:0]};
+// assign updated_pixel_o = {write_addr_en, pixel_mem[cfg_wdata_i[DISPLAY_WIDTH-1:0]], cfg_wdata_i[DISPLAY_WIDTH-1:0]};
 
 // TEMPORARY READ LOGIC (dummy data)
 assign cfg_rvalid_o = 1'b0;
