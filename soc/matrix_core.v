@@ -2,7 +2,7 @@
 // Alternates between solid red and solid blue on HUB75 64×64 (1/32 scan)
 
 module matrix_core #(
-  parameter ON_TIME = 20000,       // cycles each row is enabled
+  parameter ON_TIME = 20000,       // cycles each row is enabled (todo put ms here)
   parameter OE_POLARITY_HIGH = 1,  // 1 if OE=1 blanks panel, 0 if OE=0 blanks
   parameter DISPLAY_WIDTH = 12     // 12 bits for 4096 pixels (64x64)
 ) (
@@ -13,7 +13,10 @@ module matrix_core #(
   output reg [14:0] matrix_output
 );
 
-reg [23:0] 		pixel_mem [0:4095];
+reg [23:0] pixel_mem [0:4095];
+reg [23:0] pixel_display_data_row_1 [0:63];
+reg [23:0] pixel_display_data_row_2 [0:63];
+reg [11:0] pixel_index;
 
 // Simulation only
 integer i;
@@ -35,7 +38,6 @@ localparam S_IDLE  = 2'd0,
 
 reg [1:0] state;
 reg [6:0] col_cnt;
-reg [6:0] row_cnt;
 reg [4:0] scan_idx;
 reg [1:0] shift_phase;
 reg [31:0] on_counter;
@@ -47,8 +49,6 @@ reg CLK, LAT, OE;
 // color flash logic
 reg [15:0] frame_counter;      // count full display refreshes
 
-reg [23:0] pixel_display_data_row_1;
-reg [23:0] pixel_display_data_row_2;
 
 // update mem
 always @(posedge clk_i) begin
@@ -66,19 +66,18 @@ function oe_blank_val;
   end
 endfunction
 
-always @(posedge clk_i or negedge rst_i) begin
-  if (!rst_i) begin
+always @ (posedge clk_i or posedge rst_i) begin
+  if (rst_i) begin
     state         <= S_IDLE;
     col_cnt       <= 0;
-    row_cnt <= 0;
     scan_idx      <= 0;
     shift_phase   <= 0;
     on_counter    <= 0;
     frame_counter <= 0;
-
+    pixel_index   <= 0;
     R1 <= 0; G1 <= 0; B1 <= 0;
     R2 <= 0; G2 <= 0; B2 <= 0;
-    A <= 0; B  <= 0; C  <= 0; D  <= 0; E  <= 0;
+    A  <= 0; B  <= 0; C  <= 0; D  <= 0; E  <= 0;
 
     CLK <= 0;
     LAT <= 0;
@@ -94,8 +93,8 @@ always @(posedge clk_i or negedge rst_i) begin
         C <= scan_idx[2];
         D <= scan_idx[3];
         E <= scan_idx[4];
-        pixel_display_data_row_1 <= pixel_mem[row_cnt + col_cnt];
-        pixel_display_data_row_2 <= pixel_mem[row_cnt + col_cnt + DISPLAY_MID_INDEX];
+        //pixel_display_data_row_1 <= pixel_mem[{5'b0, row_cnt}];
+        //pixel_display_data_row_2 <= pixel_cnt} + DISPLAY_MID_INDEX]; // optionally << 11
         LAT <= 0;
         CLK <= 0;
         state <= S_SHIFT;
@@ -106,12 +105,18 @@ always @(posedge clk_i or negedge rst_i) begin
           2'd0: begin
             CLK <= 0;
             LAT <= 0;
-            R1 <= pixel_display_data_row_1[7:0] != 0;
-            G1 <= pixel_display_data_row_1[15:8] != 0;
-            B1 <= pixel_display_data_row_1[23:16] != 0;
-            R2 <= pixel_display_data_row_2[7:0] != 0;
-            G2 <= pixel_display_data_row_2[15:8] != 0;
-            B2 <= pixel_display_data_row_2[23:16] != 0;
+            // R1 <= pixel_mem[pixel_index][7:0] != 0;
+            // G1 <= pixel_mem[pixel_index][15:8] != 0;
+            // B1 <= pixel_mem[pixel_index][23:16] != 0;
+            // R2 <= pixel_mem[pixel_index << 11][7:0] != 0;
+            // G2 <= pixel_mem[pixel_index << 11][15:8] != 0;
+            // B2 <= pixel_mem[pixel_index << 11][23:16] != 0;
+            R1 <= 1;
+            G1 <= 0;
+            B1 <= 0;
+            R2 <= 1;
+            G2 <= 0;
+            B2 <= 0;
             shift_phase <= 2'd1;
           end
 
@@ -124,13 +129,17 @@ always @(posedge clk_i or negedge rst_i) begin
             CLK <= 0;
             if (col_cnt < WIDTH-1) begin
               col_cnt <= col_cnt + 1;
+              pixel_index <= pixel_index + 1;
               shift_phase <= 2'd0;
             end else begin
               LAT <= 1;
               shift_phase <= 2'd0;
               state <= S_LATCH;
-              row_cnt <= row_cnt + 1;
             end
+          end
+
+          default: begin
+            shift_phase <= 2'd0;
           end
         endcase
       end
@@ -146,8 +155,9 @@ always @(posedge clk_i or negedge rst_i) begin
         on_counter <= on_counter + 1;
         if (on_counter >= ON_TIME) begin
           OE <= oe_blank_val(1'b1);
-          if (scan_idx == SCAN_STEPS-1) begin
+          if (scan_idx == 5'd31) begin
             scan_idx <= 0;
+            pixel_index <= 0;
             frame_counter <= frame_counter + 1;
           end else begin
             scan_idx <= scan_idx + 1;
@@ -159,8 +169,11 @@ always @(posedge clk_i or negedge rst_i) begin
   end
 end
 
-// always keep the level shifter enabled
-assign LS_OE = 1'b1;
-
+// Pack all control signals into matrix_output array
+// Based on pin mapping: [14]=R1, [13]=G1, [12]=B1, [11]=R2, [10]=G2, [9]=B2,
+// [8]=E, [7]=A, [6]=B, [5]=C, [4]=D, [3]=CLK, [2]=LAT, [1]=OE, [0]=LS_OE
+always @(*) begin
+  matrix_output = {R1, G1, B1, R2, G2, B2, E, A, B, C, D, CLK, LAT, OE, 1'b1};
+end
 
 endmodule

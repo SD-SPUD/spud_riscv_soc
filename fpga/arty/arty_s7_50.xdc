@@ -46,6 +46,31 @@ set_property CFGBVS VCCO [current_design]
 set_property BITSTREAM.CONFIG.SPI_BUSWIDTH 4 [current_design]
 set_property CONFIG_MODE SPIx4 [current_design]
 
+## Matrix Display Pins (HUB75 interface)
+## Data lines (level shifter 1)
+set_property -dict { PACKAGE_PIN L17  IOSTANDARD LVCMOS33 } [get_ports { matrix[14] }];  # JA1 -> R1
+set_property -dict { PACKAGE_PIN L18  IOSTANDARD LVCMOS33 } [get_ports { matrix[13] }];  # JA2 -> G1
+set_property -dict { PACKAGE_PIN M14  IOSTANDARD LVCMOS33 } [get_ports { matrix[12] }];  # JA3 -> B1
+set_property -dict { PACKAGE_PIN N14  IOSTANDARD LVCMOS33 } [get_ports { matrix[11] }];  # JA4 -> R2
+set_property -dict { PACKAGE_PIN M16  IOSTANDARD LVCMOS33 } [get_ports { matrix[10] }];  # JA7 -> G2
+set_property -dict { PACKAGE_PIN M17  IOSTANDARD LVCMOS33 } [get_ports { matrix[9] }];  # JA8 -> B2
+set_property -dict { PACKAGE_PIN M18  IOSTANDARD LVCMOS33 } [get_ports { matrix[8]  }];  # JA9 -> E (row addr bit 4)
+set_property -dict { PACKAGE_PIN N18  IOSTANDARD LVCMOS33 } [get_ports { matrix[7]  }];  # JA10 -> A (row addr bit 0)
+
+## Control / address (level shifter 2)
+set_property -dict { PACKAGE_PIN P17  IOSTANDARD LVCMOS33 } [get_ports { matrix[6]  }];  # JB1 -> B
+set_property -dict { PACKAGE_PIN P18  IOSTANDARD LVCMOS33 } [get_ports { matrix[5]  }];  # JB2 -> C
+set_property -dict { PACKAGE_PIN R18  IOSTANDARD LVCMOS33 } [get_ports { matrix[4]  }];  # JB3 -> D
+set_property -dict { PACKAGE_PIN T18  IOSTANDARD LVCMOS33 } [get_ports { matrix[3] }];  # JB4 -> CLK (panel shift clock)
+set_property -dict { PACKAGE_PIN P14  IOSTANDARD LVCMOS33 } [get_ports { matrix[2] }];  # JB7 -> LAT
+set_property -dict { PACKAGE_PIN P15  IOSTANDARD LVCMOS33 } [get_ports { matrix[1]  }];  # JB8 -> OE (panel)
+
+## Level shifter OE (separate from panel OE)
+set_property -dict { PACKAGE_PIN N15  IOSTANDARD LVCMOS33 } [get_ports { matrix[0] }];  # JB9 -> LS_OE
+
+## Active-low reset on BTN0
+set_property -dict { PACKAGE_PIN G15 IOSTANDARD LVCMOS33 } [get_ports { sys_rstn }];
+
 ## SW3 is assigned to a pin M5 in the 1.35v bank. This pin can also be used as
 ## the VREF for BANK 34. To ensure that SW3 does not define the reference voltage
 ## and to be able to use this pin as an ordinary I/O the following property must

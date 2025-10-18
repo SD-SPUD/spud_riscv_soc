@@ -58,7 +58,7 @@ riscv_soc::riscv_soc(sc_module_name name): sc_module(name)
     m_rtl->read_port_o(m_read_port_o);					// led_controller
     m_rtl->write_port_o(m_write_port_o);					// led_controller
     m_rtl->updated_pixel_o(m_updated_pixel_o);					// matrix_controller
-    m_rtl->updated_pixel_o(m_matrix_output_o);
+    m_rtl->matrix_output_o(m_matrix_output_o);					// matrix pins
     m_rtl->mem_awvalid_o(m_mem_awvalid_out);
     m_rtl->mem_awaddr_o(m_mem_awaddr_out);
     m_rtl->mem_awid_o(m_mem_awid_out);
