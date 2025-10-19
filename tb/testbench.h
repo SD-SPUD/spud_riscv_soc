@@ -50,6 +50,9 @@ public:
     sc_signal <sc_uint<4> >     write_port_o;			// led_controller
     sc_signal <sc_uint<37> >     updated_pixel_o;			// matrix_controller
     sc_signal <sc_uint<15> >     matrix_output_o;			// matrix pins
+    // Debug signals for Verilator tracing
+    sc_signal <sc_uint<24> >     pixel_write_data_o;		// matrix debug
+    sc_signal <sc_uint<12> >     pixel_write_addr_o;		// matrix debug
     
 
     //-----------------------------------------------------------------
@@ -94,6 +97,8 @@ public:
         m_dut->write_port_o(write_port_o);
         m_dut->updated_pixel_o(updated_pixel_o);
         m_dut->matrix_output_o(matrix_output_o);
+        m_dut->pixel_write_data_o(pixel_write_data_o);
+        m_dut->pixel_write_addr_o(pixel_write_addr_o);
 
         // Memory
         m_mem = new tb_axi4_mem("MEM");
@@ -117,6 +122,10 @@ public:
         #define TRACE_SIGNAL(a) sc_trace(fp,a,#a);
         TRACE_SIGNAL(clk);
         TRACE_SIGNAL(rst);
+
+        // Add matrix debug signals to trace
+        TRACE_SIGNAL(pixel_write_data_o);
+        TRACE_SIGNAL(pixel_write_addr_o);
 
         m_dut->add_trace(fp, "");
     }

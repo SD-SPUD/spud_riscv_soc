@@ -2,7 +2,7 @@
 // Alternates between solid red and solid blue on HUB75 64×64 (1/32 scan)
 
 module matrix_core #(
-  parameter ON_TIME = 20000,       // cycles each row is enabled (todo put ms here)
+  parameter ON_TIME = 5000,        // cycles each row is enabled (adjusted for 25MHz)
   parameter OE_POLARITY_HIGH = 1,  // 1 if OE=1 blanks panel, 0 if OE=0 blanks
   parameter DISPLAY_WIDTH = 12     // 12 bits for 4096 pixels (64x64)
 ) (
@@ -105,23 +105,18 @@ always @ (posedge clk_i or posedge rst_i) begin
           2'd0: begin
             CLK <= 0;
             LAT <= 0;
-            // R1 <= pixel_mem[pixel_index][7:0] != 0;
-            // G1 <= pixel_mem[pixel_index][15:8] != 0;
-            // B1 <= pixel_mem[pixel_index][23:16] != 0;
-            // R2 <= pixel_mem[pixel_index << 11][7:0] != 0;
-            // G2 <= pixel_mem[pixel_index << 11][15:8] != 0;
-            // B2 <= pixel_mem[pixel_index << 11][23:16] != 0;
-            R1 <= 1;
-            G1 <= 0;
-            B1 <= 0;
-            R2 <= 1;
-            G2 <= 0;
-            B2 <= 0;
+            R1 <= pixel_mem[pixel_index][7:0] != 0;
+            G1 <= pixel_mem[pixel_index][15:8] != 0;
+            B1 <= pixel_mem[pixel_index][23:16] != 0;
+            R2 <= pixel_mem[pixel_index + 2048][7:0] != 0;
+            G2 <= pixel_mem[pixel_index + 2048][15:8] != 0;
+            B2 <= pixel_mem[pixel_index + 2048][23:16] != 0;
             shift_phase <= 2'd1;
           end
 
           2'd1: begin
             CLK <= 1; // rising edge
+            pixel_index <= pixel_index + 1;
             shift_phase <= 2'd2;
           end
 
@@ -129,7 +124,6 @@ always @ (posedge clk_i or posedge rst_i) begin
             CLK <= 0;
             if (col_cnt < WIDTH-1) begin
               col_cnt <= col_cnt + 1;
-              pixel_index <= pixel_index + 1;
               shift_phase <= 2'd0;
             end else begin
               LAT <= 1;
@@ -158,7 +152,6 @@ always @ (posedge clk_i or posedge rst_i) begin
           if (scan_idx == 5'd31) begin
             scan_idx <= 0;
             pixel_index <= 0;
-            frame_counter <= frame_counter + 1;
           end else begin
             scan_idx <= scan_idx + 1;
           end

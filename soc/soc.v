@@ -173,6 +173,9 @@ module soc
     ,output [3:0]    write_port_o
     ,output [36:0]   updated_pixel_o
     ,output [14:0]   matrix_output_o
+    // Debug outputs for Verilator tracing
+    ,output [23:0]   pixel_write_data_o
+    ,output [11:0]   pixel_write_addr_o
 );
 
 wire  [  3:0]  axi_retime_arid_w;
@@ -955,7 +958,9 @@ matrix_controller u_matrix
     .cfg_rdata_o(axi_tap_output6_rdata_w),
     .cfg_rresp_o(axi_tap_output6_rresp_w),
     .updated_pixel_o(updated_pixel_o),
-    .matrix_output_o(matrix_output_o)
+    .matrix_output_o(matrix_output_o),
+    .pixel_write_data_o(pixel_write_data_o),
+    .pixel_write_addr_o(pixel_write_addr_o)
 
 );
 endmodule
