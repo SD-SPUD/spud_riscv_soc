@@ -52,6 +52,7 @@ module matrix_controller (		// 64x64 matrix, 4096 pixels, 2^12 = 4096, so 12 bit
 	output [1:0]   	cfg_rresp_o,
 	output [36:0]	updated_pixel_o,	// TEMP output signal for sim validation
 	output [14:0]   matrix_output_o,
+	output          row_update_flag_o,	// Flag: high during row update, low when complete
 	// Debug outputs for Verilator tracing
 	output [23:0]	pixel_write_data_o,
 	output [11:0]	pixel_write_addr_o
@@ -97,7 +98,8 @@ matrix_core #(
 	.rst_i(rst_i),   // active-low resetz
 	.pixel_write_data(pixel_write_data),
 	.pixel_write_addr(pixel_write_addr),
-    .matrix_output(matrix_output_o)
+    .matrix_output(matrix_output_o),
+    .row_update_flag_o(row_update_flag_o)
 );
 
 wire write_data_en = write_en_w && (cfg_awaddr_i == `MATRIX_CTRL_DATA);

@@ -59,6 +59,7 @@ riscv_soc::riscv_soc(sc_module_name name): sc_module(name)
     m_rtl->write_port_o(m_write_port_o);					// led_controller
     m_rtl->updated_pixel_o(m_updated_pixel_o);					// matrix_controller
     m_rtl->matrix_output_o(m_matrix_output_o);					// matrix pins
+    m_rtl->row_update_flag_o(m_row_update_flag_o);					// led_controller
     m_rtl->pixel_write_data_o(m_pixel_write_data_o);			// matrix debug
     m_rtl->pixel_write_addr_o(m_pixel_write_addr_o);			// matrix debug
     m_rtl->mem_awvalid_o(m_mem_awvalid_out);
@@ -107,6 +108,7 @@ riscv_soc::riscv_soc(sc_module_name name): sc_module(name)
     sensitive << m_write_port_o;					// led_controller
     sensitive << m_updated_pixel_o;					// matrix_controller
     sensitive << m_matrix_output_o;
+    sensitive << m_row_update_flag_o;
     sensitive << m_pixel_write_data_o;				// matrix debug
     sensitive << m_pixel_write_addr_o;				// matrix debug
     sensitive << m_mem_awvalid_out;
@@ -163,6 +165,7 @@ void riscv_soc::async_outputs(void)
     write_port_o.write(m_write_port_o.read());				// led_controller
     updated_pixel_o.write(m_updated_pixel_o.read());				// matrix_controller
     matrix_output_o.write(m_matrix_output_o.read());
+    row_update_flag_o.write(m_row_update_flag_o.read());
     pixel_write_data_o.write(m_pixel_write_data_o.read());			// matrix debug
     pixel_write_addr_o.write(m_pixel_write_addr_o.read());			// matrix debug
     axi4_lite_master inport_i = inport_in.read();

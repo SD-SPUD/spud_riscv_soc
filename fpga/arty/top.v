@@ -81,9 +81,6 @@ wire [31:0] gpio_in_w;
 // TODO: kinda ugly here. should be moved to gpio???
 assign gpio_in_w = {{22{1'b0}}, arcade};
 
-// Arcade button flag - high when any button is pressed, low when all released
-assign flag = |(~arcade);
-
 artix7_pll
 u_pll
 (
@@ -205,6 +202,7 @@ u_top
 
     // MATRIX
     .matrix_output_o(matrix),
+    .row_update_flag_o(flag),
 
     // UART
     .dbg_rxd_o(dbg_txd_w),

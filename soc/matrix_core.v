@@ -10,7 +10,8 @@ module matrix_core #(
   input  wire rst_i,
   input  wire [23:0] pixel_write_data,   // active-low reset
   input  wire [11:0] pixel_write_addr,   // active-low reset
-  output reg [14:0] matrix_output
+  output reg [14:0] matrix_output,
+  output row_update_flag_o               // Flag: high during row update, low when complete
 );
 
 reg [23:0] pixel_mem [0:4095];
@@ -45,6 +46,7 @@ reg R1, G1, B1;
 reg R2, G2, B2;
 reg A, B, C, D, E;
 reg CLK, LAT, OE;
+reg flag_reg;
 
 // color flash logic
 reg [15:0] frame_counter;      // count full display refreshes
@@ -82,6 +84,7 @@ always @ (posedge clk_i or posedge rst_i) begin
     CLK <= 0;
     LAT <= 0;
     OE  <= oe_blank_val(1'b1);
+    flag_reg <= 1'b0;
   end else begin
     case (state)
       S_IDLE: begin
@@ -152,6 +155,7 @@ always @ (posedge clk_i or posedge rst_i) begin
           if (scan_idx == 5'd31) begin
             scan_idx <= 0;
             pixel_index <= 0;
+            flag_reg <= ~flag_reg;  // Toggle flag when full display is complete
           end else begin
             scan_idx <= scan_idx + 1;
           end
@@ -168,5 +172,7 @@ end
 always @(*) begin
   matrix_output = {R1, G1, B1, R2, G2, B2, E, A, B, C, D, CLK, LAT, OE, 1'b1};
 end
+
+assign row_update_flag_o = flag_reg;
 
 endmodule

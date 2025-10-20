@@ -33,6 +33,7 @@ public:
     sc_out <sc_uint<4> > write_port_o;			// led_controller
     sc_out <sc_uint<37> > updated_pixel_o;			// matrix_controller
     sc_out <sc_uint<15> > matrix_output_o;			// matrix pins
+    sc_out <bool> row_update_flag_o;
     sc_out <sc_uint<24> > pixel_write_data_o;		// matrix debug
     sc_out <sc_uint<12> > pixel_write_addr_o;		// matrix debug
 
@@ -73,6 +74,7 @@ public:
         TRACE_SIGNAL(write_port_o);
         TRACE_SIGNAL(updated_pixel_o);
         TRACE_SIGNAL(matrix_output_o);
+        TRACE_SIGNAL(row_update_flag_o);
         TRACE_SIGNAL(pixel_write_data_o);
         TRACE_SIGNAL(pixel_write_addr_o);
 
@@ -140,6 +142,7 @@ private:
     sc_signal <sc_uint<4> > m_write_port_o;				// led_controller
     sc_signal <sc_uint<37> > m_updated_pixel_o;				// matrix_controller
     sc_signal <sc_uint<15> > m_matrix_output_o;
+    sc_signal <bool> m_row_update_flag_o;
     sc_signal <sc_uint<24> > m_pixel_write_data_o;			// matrix debug
     sc_signal <sc_uint<12> > m_pixel_write_addr_o;			// matrix debug		
 

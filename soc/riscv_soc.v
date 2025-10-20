@@ -94,6 +94,7 @@ module riscv_soc
     ,output [  3:0]  write_port_o			// tap
     ,output [  36:0] updated_pixel_o // new matrix signal for sim
     ,output [  14:0] matrix_output_o //matrix pin output
+    ,output          row_update_flag_o // matrix row update flag
     // Debug outputs for Verilator tracing
     ,output [  23:0] pixel_write_data_o
     ,output [  11:0] pixel_write_addr_o
@@ -449,6 +450,7 @@ soc u_soc
     ,.write_port_o(write_port_o)					// tap
     ,.updated_pixel_o(updated_pixel_o)
     ,.matrix_output_o(matrix_output_o)
+    ,.row_update_flag_o(row_update_flag_o)
     ,.pixel_write_data_o(pixel_write_data_o)
     ,.pixel_write_addr_o(pixel_write_addr_o)
 );
