@@ -72,7 +72,8 @@ module led_controller (
 	// Request Logic
 	//-----------------------------------------------------------------
 	wire read_en_w  = cfg_arvalid_i & cfg_arready_o;
-	wire write_en_w = cfg_awvalid_i & cfg_awready_o;
+	wire write_en_w = cfg_awvalid_i & cfg_awready_o &
+                  cfg_wvalid_i  & cfg_wready_o;
 
 	//-----------------------------------------------------------------
 	// Accept Logic
@@ -89,20 +90,12 @@ module led_controller (
 	reg [1:0] 	led_data_q;
 	reg		led_data_wr_q;		
 	
-	// Determine if there is a valid LED write
+	// LED write logic
 	always @(posedge clk_i or posedge rst_i)
-		if (rst_i)
-			led_data_wr_q <= 1'b0;
-		else
-			led_data_wr_q <= write_en_w;
-
-	// Write data to led output
-	always @(posedge clk_i or posedge rst_i)
-		if (rst_i)
-			led_data_q <= 2'b00; 
-		else if(led_data_wr_q) 	// valid write check
-			led_data_q <= cfg_wdata_i[1:0];
-		
+    		if (rst_i)
+        		led_data_q <= 2'b00;
+    		else if (write_en_w)
+        		led_data_q <= cfg_wdata_i[1:0];	
 	// Latch output
 	assign led_o = led_data_q;
 
