@@ -8,6 +8,7 @@ module top
     output [3:0]            led,
     output [14:0]           matrix,
     input  [9:0]            arcade,
+    output                  flag,
     output                  uart_rxd_out,
     input                   uart_txd_in,
 
@@ -79,6 +80,9 @@ wire [31:0] gpio_in_w;
 // Upper 22 bits read as 0
 // TODO: kinda ugly here. should be moved to gpio???
 assign gpio_in_w = {{22{1'b0}}, arcade};
+
+// Arcade button flag - high when any button is pressed, low when all released
+assign flag = |(~arcade);
 
 artix7_pll
 u_pll
@@ -238,7 +242,7 @@ assign led[2] = debug_cpu_reset_w;    // LD4: ON when CPU in debug reset
 assign led[3] = rst_sys_w;            // LD5: ON when system in reset
 
 assign qspi_dq[2] = 1'bz;
-assign qspi_dq[3] = 1'bz;
+assign qspi_dq[3] = 1'bz; 
 assign qspi_dq[0] = 1'bz;
 assign qspi_dq[1] = 1'bz;
 
