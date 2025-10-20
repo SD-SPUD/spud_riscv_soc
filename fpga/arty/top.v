@@ -7,6 +7,7 @@ module top
     input                   i_rst,
     output [3:0]            led,
     output [14:0]           matrix,
+    input  [9:0]            arcade,
     output                  uart_rxd_out,
     input                   uart_txd_in,
 
@@ -68,6 +69,16 @@ wire  [ 31:0]  axi_awaddr_w;
 wire           axi_bvalid_w;
 wire           axi_bready_w;
 wire  [ 31:0]  axi_wdata_w;
+
+// GPIO Input Mapping - Arcade Buttons
+wire [31:0] gpio_out_w;
+wire [31:0] gpio_oe_w;
+wire [31:0] gpio_in_w;
+
+// Connect arcade button inputs to lower 10 bits of GPIO input
+// Upper 22 bits read as 0
+// TODO: kinda ugly here. should be moved to gpio???
+assign gpio_in_w = {{22{1'b0}}, arcade};
 
 artix7_pll
 u_pll
@@ -181,9 +192,9 @@ u_top
     .spi_miso_i(1'b0),
 
     // GPIO
-    .gpio_output_o(),
-    .gpio_output_enable_o(),
-    .gpio_input_i(32'b0),
+    .gpio_output_o(gpio_out_w),
+    .gpio_output_enable_o(gpio_oe_w),
+    .gpio_input_i(gpio_in_w),
 
     // LED
     .led_o(led[1:0]),		// led_controller

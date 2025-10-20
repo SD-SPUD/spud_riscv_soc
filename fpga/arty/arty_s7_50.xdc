@@ -35,9 +35,9 @@ set_property -dict {PACKAGE_PIN R12 IOSTANDARD LVCMOS33} [get_ports { uart_rxd_o
 set_property -dict {PACKAGE_PIN V12 IOSTANDARD LVCMOS33} [get_ports { uart_txd_in }];
 #set_property -dict { PACKAGE_PIN D10   IOSTANDARD LVCMOS33 } [get_ports { uart_rxd_out }]; #IO_L19N_T3_VREF_16 Sch=uart_rxd_outs
 
-##Quad SPI Flash
-set_property -dict { PACKAGE_PIN L16   IOSTANDARD LVCMOS33 } [get_ports { qspi_sck }]; #IO_L3P_T0_DQS_EMCCLK_14 Sch=qspi_sck
-set_property -dict { PACKAGE_PIN L13   IOSTANDARD LVCMOS33 } [get_ports { qspi_cs }]; #IO_L6P_T0_FCS_B_14 Sch=qspi_cs
+##Quad SPI Flash - moved to unused button pins to avoid conflicts
+set_property -dict { PACKAGE_PIN U11   IOSTANDARD LVCMOS33 } [get_ports { qspi_sck }];
+set_property -dict { PACKAGE_PIN V15   IOSTANDARD LVCMOS33 } [get_ports { qspi_cs }];
 
 ## Configuration options, can be used for all designs
 set_property BITSTREAM.CONFIG.CONFIGRATE 50 [current_design]
@@ -64,6 +64,19 @@ set_property -dict { PACKAGE_PIN R13  IOSTANDARD LVCMOS33 } [get_ports { matrix[
 set_property -dict { PACKAGE_PIN H16  IOSTANDARD LVCMOS33 } [get_ports { matrix[3] }];  # JB4 -> CLK (panel shift clock)
 set_property -dict { PACKAGE_PIN V14  IOSTANDARD LVCMOS33 } [get_ports { matrix[2] }];  # JB7 -> LAT
 set_property -dict { PACKAGE_PIN H17  IOSTANDARD LVCMOS33 } [get_ports { matrix[1]  }];  # JB8 -> OE (panel)
+
+## ARCADE CONTROLLER PINS
+set_property -dict { PACKAGE_PIN U12 IOSTANDARD LVCMOS33 } [get_ports { arcade[0] }]; # ck_io32 -> ARC1
+set_property -dict { PACKAGE_PIN V13 IOSTANDARD LVCMOS33 } [get_ports { arcade[1] }]; # ck_io31 -> ARC2
+set_property -dict { PACKAGE_PIN T12 IOSTANDARD LVCMOS33 } [get_ports { arcade[2] }]; # ck_io30 -> ARC3
+set_property -dict { PACKAGE_PIN T13 IOSTANDARD LVCMOS33 } [get_ports { arcade[3] }]; # ck_io29 -> ARC4
+set_property -dict { PACKAGE_PIN R11 IOSTANDARD LVCMOS33 } [get_ports { arcade[4] }]; # ck_io28 -> ARC5
+set_property -dict { PACKAGE_PIN T11 IOSTANDARD LVCMOS33 } [get_ports { arcade[5] }]; # ck_io27 -> ARC6
+set_property -dict { PACKAGE_PIN R14 IOSTANDARD LVCMOS33 } [get_ports { arcade[6] }]; # ck_io3 -> ARC7
+set_property -dict { PACKAGE_PIN L16 IOSTANDARD LVCMOS33 } [get_ports { arcade[7] }]; # ck_io2 -> ARC8
+set_property -dict { PACKAGE_PIN N13 IOSTANDARD LVCMOS33 } [get_ports { arcade[8] }]; # ck_io1 -> ARC9
+set_property -dict { PACKAGE_PIN L13 IOSTANDARD LVCMOS33 } [get_ports { arcade[9] }]; # ck_io0 -> ARC10
+
 
 ## Level shifter OE (separate from panel OE)
 set_property -dict { PACKAGE_PIN G16  IOSTANDARD LVCMOS33 } [get_ports { matrix[0] }];  # JB9 -> LS_OE
