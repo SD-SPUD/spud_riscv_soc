@@ -5,7 +5,7 @@ endif
 ###############################################################################
 ## Tool paths
 ###############################################################################
-VERILATOR_SRC ?= $(VERILATOR_HOME)/share/verilator/include
+VERILATOR_SRC ?= $(VERILATOR_HOME)/include
 SYSTEMC_HOME  ?= $(SYSTEMC_HOME)
 
 TEST_IMAGE ?= ../core/isa_sim/images/basic.elf
