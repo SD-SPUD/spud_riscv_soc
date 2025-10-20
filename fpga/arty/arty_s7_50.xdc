@@ -77,6 +77,7 @@ set_property -dict { PACKAGE_PIN L16 IOSTANDARD LVCMOS33 } [get_ports { arcade[7
 set_property -dict { PACKAGE_PIN N13 IOSTANDARD LVCMOS33 } [get_ports { arcade[8] }]; # ck_io1 -> ARC9
 set_property -dict { PACKAGE_PIN L13 IOSTANDARD LVCMOS33 } [get_ports { arcade[9] }]; # ck_io0 -> ARC10
 
+set_property -dict { PACKAGE_PIN K14 IOSTANDARD LVCMOS33 } [get_ports { flag }]; # ck_io12  -> flag
 
 ## Level shifter OE (separate from panel OE)
 set_property -dict { PACKAGE_PIN G16  IOSTANDARD LVCMOS33 } [get_ports { matrix[0] }];  # JB9 -> LS_OE
