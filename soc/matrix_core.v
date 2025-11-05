@@ -10,6 +10,7 @@ module matrix_core #(
   input  wire rst_i,
   input  wire [23:0] pixel_write_data,   // active-low reset
   input  wire [11:0] pixel_write_addr,   // active-low reset
+  input  wire  pixel_write_en,
   output reg [14:0] matrix_output
 );
 
@@ -52,7 +53,7 @@ reg [15:0] frame_counter;      // count full display refreshes
 
 // update mem
 always @(posedge clk_i) begin
-    pixel_mem[pixel_write_addr] <= pixel_write_data;
+  if(pixel_write_en) pixel_mem[pixel_write_addr] <= pixel_write_data;
 end
 
 // helper: return correct OE level for "blank"
