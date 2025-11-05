@@ -107,8 +107,8 @@ wire write_addr_en = write_en_w && (cfg_awaddr_i == `MATRIX_CTRL_ADDR);
 reg pixel_write_en, pixel_write_en_next;
 
 // FSM State instantiation
-localparam IDLE = 0, ADDR_RECEIVED = 1, UPDATE_CORE = 2;
-reg [1:0] state, next_state;
+localparam IDLE = 0, ADDR_RECEIVED = 1;
+reg state, next_state;
 
 always @(posedge clk_i) begin
 	if(rst_i) begin
@@ -142,15 +142,10 @@ always @(*) begin
 		ADDR_RECEIVED: begin
 			if(write_data_en) begin
 				pixel_write_data_next = cfg_wdata_i[23:0]; 	// store RGB data from axi payload and update display on next cycle
-				next_state = UPDATE_CORE;
+				pixel_write_en_next = 1'b1;					// send info as soon as data arrives
+				next_state = IDLE;
 			end 
 		end
-
-		UPDATE_CORE: begin
-			pixel_write_en_next = 1'b1;
-			next_state = IDLE;
-		end
-
 		default: next_state = IDLE;
 	endcase
 end
