@@ -88,7 +88,7 @@ assign cfg_wready_o  = cfg_awready_o;
 
 // Internal signals
 reg [23:0]		pixel_write_data;
-reg [DISPLAY_WIDTH-1:0] pixel_write_addr;
+reg [DISPLAY_WIDTH-1:0] pixel_write_addr, pixel_write_addr_d;
 
 matrix_core #(
 	.DISPLAY_WIDTH(DISPLAY_WIDTH)
@@ -96,7 +96,7 @@ matrix_core #(
 	.clk_i(clk_i),
 	.rst_i(rst_i),   // active-low resetz
 	.pixel_write_data(pixel_write_data),
-	.pixel_write_addr(pixel_write_addr),
+	.pixel_write_addr(pixel_write_addr_d),
     .matrix_output(matrix_output_o)
 );
 
@@ -110,6 +110,7 @@ always @(posedge clk_i) begin
 		if(write_data_en) pixel_write_data <= cfg_wdata_i[23:0];
 
 		if (write_addr_en) pixel_write_addr <= cfg_wdata_i[DISPLAY_WIDTH-1:0];
+		pixel_write_addr_d <= pixel_write_addr;		// added delay for payload data and address alignment
 	end
 end
 

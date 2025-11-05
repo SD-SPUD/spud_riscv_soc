@@ -15,7 +15,7 @@
 #endif
 
 #ifndef CLK0_PERIOD
-    #define CLK0_PERIOD  10
+    #define CLK0_PERIOD  40
 #endif
 
 #ifndef CLK0_NAME
