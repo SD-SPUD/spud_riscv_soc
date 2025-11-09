@@ -87,8 +87,8 @@ assign cfg_awready_o = ~cfg_bvalid_o && ~cfg_arvalid_i;
 assign cfg_wready_o  = cfg_awready_o;
 
 // Internal signals
-reg [23:0]		pixel_write_data;
-reg [DISPLAY_WIDTH-1:0] pixel_write_addr;
+reg [23:0]		pixel_write_data, pixel_write_data_next;
+reg [DISPLAY_WIDTH-1:0] pixel_write_addr, pixel_write_addr_next;
 
 matrix_core #(
 	.DISPLAY_WIDTH(DISPLAY_WIDTH)
@@ -97,23 +97,58 @@ matrix_core #(
 	.rst_i(rst_i),   // active-low resetz
 	.pixel_write_data(pixel_write_data),
 	.pixel_write_addr(pixel_write_addr),
+	.pixel_write_en(pixel_write_en),
     .matrix_output(matrix_output_o)
 );
 
+// Enable signals
 wire write_data_en = write_en_w && (cfg_awaddr_i == `MATRIX_CTRL_DATA);
 wire write_addr_en = write_en_w && (cfg_awaddr_i == `MATRIX_CTRL_ADDR);
+reg pixel_write_en, pixel_write_en_next;
+
+// FSM State instantiation
+localparam IDLE = 0, ADDR_RECEIVED = 1;
+reg state, next_state;
 
 always @(posedge clk_i) begin
 	if(rst_i) begin
-		pixel_write_data <= 24'h0;
+		state <= IDLE;
+		pixel_write_addr <= 0;
+		pixel_write_data <= 0;
+		pixel_write_en <= 0;
 	end else begin
-		if(write_data_en) pixel_write_data <= cfg_wdata_i[23:0];
-
-		if (write_addr_en) pixel_write_addr <= cfg_wdata_i[DISPLAY_WIDTH-1:0];
+		state <= next_state;
+		pixel_write_addr <= pixel_write_addr_next;
+		pixel_write_data <= pixel_write_data_next;
+		pixel_write_en   <= pixel_write_en_next;
 	end
 end
 
-// assign updated_pixel_o = {write_addr_en, pixel_mem[cfg_wdata_i[DISPLAY_WIDTH-1:0]], cfg_wdata_i[DISPLAY_WIDTH-1:0]};
+always @(*) begin
+	// Pre-default assignments
+	pixel_write_addr_next = pixel_write_addr; // default hold
+	pixel_write_data_next = pixel_write_data; // default hold
+    pixel_write_en_next = 1'b0;
+    next_state = state; // default hold current state
+
+	case(state)
+		IDLE: begin
+			if(write_addr_en) begin
+				pixel_write_addr_next = cfg_wdata_i[DISPLAY_WIDTH-1:0]; // store address data from axi payload and wait for data
+				next_state = ADDR_RECEIVED;
+			end 
+		end
+
+		ADDR_RECEIVED: begin
+			if(write_data_en) begin
+				pixel_write_data_next = cfg_wdata_i[23:0]; 	// store RGB data from axi payload and update display on next cycle
+				pixel_write_en_next = 1'b1;					// send info as soon as data arrives
+				next_state = IDLE;
+			end 
+		end
+		default: next_state = IDLE;
+	endcase
+end
 
 // TEMPORARY READ LOGIC (dummy data)
 assign cfg_rvalid_o = 1'b0;
