@@ -39,6 +39,15 @@ class UartBusInterface:
         self.uart.isOpen()
 
     ##################################################################
+    # close: Close serial connection
+    ##################################################################
+    def close(self):
+        if self.uart != None:
+            self.uart.flush()
+            self.uart.close()
+            self.uart = None
+
+    ##################################################################
     # read32: Read a word from a specified address
     ##################################################################
     def read32(self, addr):
@@ -74,16 +83,17 @@ class UartBusInterface:
 
         # Send write command
         cmd = bytearray([self.CMD_WRITE,
-                         4, 
-                        (addr >> 24)  & 0xFF, 
-                        (addr >> 16)  & 0xFF, 
-                        (addr >> 8)   & 0xFF, 
-                        (addr >> 0)   & 0xFF, 
-                        (value >> 0)  & 0xFF, 
-                        (value >> 8)  & 0xFF, 
-                        (value >> 16) & 0xFF, 
+                         4,
+                        (addr >> 24)  & 0xFF,
+                        (addr >> 16)  & 0xFF,
+                        (addr >> 8)   & 0xFF,
+                        (addr >> 0)   & 0xFF,
+                        (value >> 0)  & 0xFF,
+                        (value >> 8)  & 0xFF,
+                        (value >> 16) & 0xFF,
                         (value >> 24) & 0xFF])
         self.uart.write(cmd)
+        self.uart.flush()
 
     ##################################################################
     # write: Write a block of data to a specified address
@@ -130,6 +140,9 @@ class UartBusInterface:
             if addr_incr:
                 addr  += l
             remainder -= l
+
+        # Flush after all blocks written
+        self.uart.flush()
 
     ##################################################################
     # read: Read a block of data from a specified address

@@ -31,7 +31,8 @@ class BusInterface:
     # close: Close connection
     ##################################################################
     def close(self):
-        pass
+        if self.bus != None:
+            self.bus.close()
 
     ##################################################################
     # write: Write a block of data to a specified address

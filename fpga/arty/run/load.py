@@ -121,6 +121,8 @@ def main(argv):
     # Load program arguments
     load_prog_args(args.filename, bus_if, args.progargs)
 
+    bus_if.close()
+
 if __name__ == "__main__":
    main(sys.argv[1:])
 

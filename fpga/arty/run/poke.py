@@ -23,6 +23,7 @@ def main(argv):
     value  = int(args.value, 0)
 
     bus_if.write32(addr, value)
+    bus_if.close()
 
 if __name__ == "__main__":
    main(sys.argv[1:])

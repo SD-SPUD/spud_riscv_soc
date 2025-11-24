@@ -36,7 +36,15 @@ def main(argv):
     print("Reset complete.")
 
     print("Starting console... Press Ctrl+C to exit.")
-    stdio_init()
+
+    # Try to initialize raw terminal mode, but continue without it if it fails
+    interactive_mode = True
+    try:
+        stdio_init()
+    except Exception as e:
+        print(f"Note: Interactive mode unavailable ({e})")
+        print("Running in output-only mode...")
+        interactive_mode = False
 
     try:
         while True:
@@ -44,11 +52,12 @@ def main(argv):
                 ch = bus_if.bus.uart.read(1)
                 if ch != None:
                     sys.stdout.write(ch.decode('utf-8', errors='ignore'))
-                    sys.stdout.flush()     
-            
-            ch = stdio_read()
-            if ch != None:
-                bus_if.bus.uart.write(ch)
+                    sys.stdout.flush()
+
+            if interactive_mode:
+                ch = stdio_read()
+                if ch != None:
+                    bus_if.bus.uart.write(ch)
     except KeyboardInterrupt:
         print("\nExiting console...")
         sys.exit(0)
