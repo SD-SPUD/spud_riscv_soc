@@ -6,6 +6,7 @@ module top
     input                   clk100mhz,
     input                   i_rst,
     output [3:0]            led,
+    output		    flag,
     output [14:0]           matrix,
     input  [9:0]            arcade,
     output                  uart_rxd_out,
@@ -146,6 +147,7 @@ arty_ddr u_ddr
 wire dbg_txd_w;
 wire uart_txd_w;
 wire debug_cpu_reset_w;
+assign flag = |(~led);
 
 fpga_top
 u_top
